@@ -1,0 +1,19 @@
+==========================
+The MOM6 Development Cycle
+==========================
+
+:author: Marshall Ward
+:description: An overview of how the MOM6 development cycle ensures correctness
+              and reproducibility
+:date: 2023-11-09
+:url: https://marshallward.org/woco2023/slides.html
+:preface:
+   TODO
+
+----
+
+
+Slides 1
+========
+
+TODO
