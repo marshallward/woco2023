@@ -17,7 +17,7 @@ DOTFIGURES=$(patsubst %.dot,%.svg,$(subst dot/,img/,$(DOTFILES)))
 
 SOURCE=$(wildcard src/*.F90)
 
-all: slides.html reveal.js $(DOTFIGURES)
+all: index.html reveal.js $(DOTFIGURES)
 
 reveal.js:
 	wget -N ${REPO}
@@ -28,8 +28,7 @@ reveal.js/css/theme/gfdl.css: gfdl.css
 	mkdir -p reveal.js/css/theme
 	cp gfdl.css reveal.js/css/theme/
 
-slides.html: slides.txt
-%.html : %.txt gfdl.revealjs reveal.js/css/theme/gfdl.css $(DOTFIGURES) $(SOURCE)
+index.html : slides.txt gfdl.revealjs reveal.js/css/theme/gfdl.css $(DOTFIGURES) $(SOURCE)
 	pandoc ${FLAGS} $< -o $@
 	sed -i 's/^" data-start-line=/"><code data-start-line=/g' $@
 	sed -i 's/<li class="fragment"/<li/g' $@

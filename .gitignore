@@ -1,2 +1,4 @@
-*.html
-reveal.js/
+/index.html
+/img/consortium.svg
+
+/reveal.js/

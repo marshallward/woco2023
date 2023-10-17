@@ -3,17 +3,97 @@ The MOM6 Development Cycle
 ==========================
 
 :author: Marshall Ward
-:description: An overview of how the MOM6 development cycle ensures correctness
-              and reproducibility
+:description: How the MOM6 development cycle ensures correctness and reproducibility
 :date: 2023-11-09
 :url: https://marshallward.org/woco2023/slides.html
 :preface:
    TODO
 
-----
 
-
-Slides 1
-========
+MOM6 Ocean Model
+================
 
 TODO
+
+
+MOM6 Consortium
+===============
+
+.. image:: img/consortium.svg
+   :width: 80%
+
+
+What is the MOM6 Consortium?
+----------------------------
+
+.. list-table::
+   :widths: 50 50
+
+   - * .. image:: img/consortium.svg
+
+     * Governance is handled by a verified list of partners.
+
+       Each partner manages their own branch, and contributes to ``main``.
+
+       Individuals contribute to partner branches.
+
+
+Consortium Rules
+================
+
+Rules of consortium
+
+1. Git history is preserved across all nodes (no matter how messy!)
+
+2. **Absolutely NO** answer changes are permitted, unless approved by *all*
+   members.
+
+
+GFDL PR life Cycle
+==================
+
+1. User submission to node
+
+2. Automated (CI) testing
+
+   Currently, incoherent mash of unit and integrated testing
+
+3. Node review
+
+4. Validation by regression testing
+
+  - Explain in detail
+
+5. Rebase into node
+
+
+CI Testing
+==========
+
+
+
+
+
+
+History management
+==================
+
+Rules of history management:
+
+1. We **preserve** history of partners ("across nodes")
+
+2. We **rewrite** history of contributors ("within nodes")
+
+
+Why preserve history
+====================
+
+1. Preserve development activity of nodes, especially hashes for ongoing runs
+
+2. Allow *cross-node* activity, e.g. sharing commits across
+
+
+
+
+
+
