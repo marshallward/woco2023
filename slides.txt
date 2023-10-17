@@ -45,12 +45,15 @@ What is the MOM6 Consortium?
 Consortium Rules
 ================
 
-Rules of consortium
+.. list-table::
+   :widths: 40 60
 
-1. Git history is preserved across all nodes (no matter how messy!)
+   - * .. image:: img/git_nodes_dev.svg
 
-2. **Absolutely NO** answer changes are permitted, unless approved by *all*
-   members.
+     * 1. Git history is preserved across all nodes (no matter how messy!)
+
+       2. **Absolutely NO** answer changes are permitted, unless approved by *all*
+          members.
 
 
 Git Review: Fast Forward
@@ -59,13 +62,15 @@ Git Review: Fast Forward
 .. list-table::
    :widths: 50 50
 
-   - * .. image:: img/git_no_ff.svg
+   - * .. image:: img/git_ff.svg
+
+       ``git merge``
+
+     * .. image:: img/git_no_ff.svg
 
        ``git merge --no-ff``
 
-     * .. image:: img/git_ff.svg
-
-       ``git merge``
+Merge commits (``--no-ff``) support history preservation.
 
 
 GFDL PR life Cycle

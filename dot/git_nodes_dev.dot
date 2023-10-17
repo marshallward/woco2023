@@ -1,4 +1,4 @@
-digraph git_ff {
+digraph git_no_ff {
     rankdir="TB"
     nodesep=0.5
     ranksep=0.25
@@ -33,7 +33,11 @@ digraph git_ff {
     }
     subgraph {
         rank=sink
-        de [label="dev/gfdl", group="develop"]
+        ge [label="dev/gfdl", group="gfdl"]
+    }
+    subgraph {
+        rank=sink
+        ne [label="dev/ncar", group="ncar"]
     }
 
     // Commit nodes
@@ -50,30 +54,48 @@ digraph git_ff {
         group="main"
         fillcolor="#27E4F9"
     ]
-    m1 -> m2 -> m3ff -> m4ff
+    m1 -> m2 -> m3 -> m4
     subgraph {
         rank=source
         ms [label="", width=0, height=0, penwidth=0]
     }
-    ms -> m1 [color="gray", style=dashed, arrowhead=none]
-    m4ff -> me [color="gray", style=dashed, arrowhead=none]
+    //ms -> m1 [color="gray", style=dashed, arrowhead=none]
+    ms -> m1
+    m4 -> me [color="gray", style=dashed, arrowhead=none]
 
-    // dev/gfdl branch
+    // GFDL branch
     node [
-        group="develop"
+        group="gfdl"
         fillcolor="magenta"
-        color="gray40"
     ]
-    d1 -> d2
+    g1 -> g2 -> g3 -> g4
+    g5 -> g6
     subgraph {
         rank=source
-        ds [label="", width=0, height=0, penwidth=0]
+        gs [label="", width=0, height=0, penwidth=0]
     }
-    ds -> d1 [color="gray", style=dashed, arrowhead=none]
-    d2 -> de [color="gray", style=dashed, arrowhead=none]
+    gs -> g1 [color="gray", style=dashed, arrowhead=none]
+    g4 -> g5 [color="gray", style=dashed, arrowhead=none]
+    g6 -> ge [color="gray", style=dashed, arrowhead=none]
+
+    // NCAR branch
+    node [
+        group="ncar"
+        fillcolor="yellow"
+    ]
+    n1 -> n2 -> n3
+    subgraph {
+        rank=source
+        ns [label="", width=0, height=0, penwidth=0]
+    }
+    ns -> n1 [color="gray", style=dashed, arrowhead=none]
+    n3 -> ne [color="gray", style=dashed, arrowhead=none]
 
     // Branch interactions
-    m2 -> d1 [color="gray40"]
-    d1 -> m3ff [color="gray", style="dashed"]
-    d2 -> m4ff [color="gray", style="dashed"]
+    m1 -> g1;
+    m1 -> n1;
+    g4 -> m2;
+    m2 -> g5;
+    g6 -> m3;
+    n3 -> m4;
 }
