@@ -1,0 +1,77 @@
+digraph git_no_ff {
+    rankdir="TB"
+    nodesep=0.5
+    ranksep=0.25
+    outputorder=edgesfirst
+
+    // Global settings
+    node [
+        style=filled
+        color="black"
+        fontname="Inconsolata"
+        fontcolor=black
+    ]
+    edge [
+        arrowhead=vee
+        color="black"
+        penwidth=2
+    ]
+
+    // Branch label nodes
+    node [
+        fixedsize=false
+        penwidth=0
+        fillcolor=none
+        shape=none
+        width=0
+        height=0
+        margin="0.05"
+    ]
+    subgraph {
+        rank=sink
+        me [label="main", group="main"]
+    }
+    subgraph {
+        rank=sink
+        de [label="dev/gfdl", group="develop"]
+    }
+
+    // Commit nodes
+    node [
+        width=0.2
+        height=0.2
+        label=""
+        shape=circle
+        penwidth=2
+    ]
+
+    // main branch
+    node [
+        group="main"
+        fillcolor="#27E4F9"
+    ]
+    m1 -> m2 -> m3
+    subgraph {
+        rank=source
+        ms [label="", width=0, height=0, penwidth=0]
+    }
+    ms -> m1 [color="gray", style=dashed, arrowhead=none]
+    m3 -> me [color="gray", style=dashed, arrowhead=none]
+
+    // dev/gfdl branch
+    node [
+        group="develop"
+        fillcolor="magenta"
+    ]
+    d1 -> d2
+    subgraph {
+        rank=source
+        ds [label="", width=0, height=0, penwidth=0]
+    }
+    ds -> d1 [color="gray", style=dashed, arrowhead=none]
+    d2 -> de [color="gray", style=dashed, arrowhead=none]
+
+    // Branch interactions
+    m2 -> d1;
+    d2 -> m3;
+}

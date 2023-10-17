@@ -38,6 +38,10 @@ What is the MOM6 Consortium?
        Individuals contribute to partner branches.
 
 
+.. note:: "verified" sounds bad here, something like "government agencies or
+          other responsible partners".  I still don't have the words here.
+
+
 Consortium Rules
 ================
 
@@ -47,6 +51,21 @@ Rules of consortium
 
 2. **Absolutely NO** answer changes are permitted, unless approved by *all*
    members.
+
+
+Git Review: Fast Forward
+------------------------
+
+.. list-table::
+   :widths: 50 50
+
+   - * .. image:: img/git_no_ff.svg
+
+       ``git merge --no-ff``
+
+     * .. image:: img/git_ff.svg
+
+       ``git merge``
 
 
 GFDL PR life Cycle
