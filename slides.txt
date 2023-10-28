@@ -83,8 +83,8 @@ Consortium Rules
 
      * 1. Git history is preserved across all nodes (no matter how messy!)
 
-       2. **Absolutely NO** answer changes are permitted, unless approved by *all*
-          members.
+       2. **Absolutely NO** answer changes are permitted unless approved by
+          *all* members.
 
 
 Git Review: Fast Forward
@@ -117,7 +117,7 @@ GFDL PR life Cycle
 
 4. Validation by regression testing
 
-  - Explain in detail
+   - Explain in detail
 
 5. Rebase into node
 
@@ -146,6 +146,24 @@ Why preserve history
 1. Preserve development activity of nodes, especially hashes for ongoing runs
 
 2. Allow *cross-node* activity, e.g. sharing commits across
+
+
+Bit Reproducibility
+===================
+
+1. Explicit order of operations:
+
+   .. math::
+
+      (a + b) + c \neq a + (b + c)
+
+2. No ambiguous operators::
+
+      sum(), exp(), z**6, ...
+
+3. High-precision summation
+
+4. Rotation-invariant stencils
 
 
 
