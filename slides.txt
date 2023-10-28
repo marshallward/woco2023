@@ -16,6 +16,41 @@ MOM6 Ocean Model
 TODO
 
 
+MOM6 sensitivity
+================
+
+TODO (2-layer with SP restarts)
+
+Reproducibility requires strict handling of floating point computation
+
+Rules for Reproducibility
+=========================
+
+* Code management
+
+* Floating point operations
+
+* Regression and invariance testing
+
+
+What we *Don't* require
+=======================
+
+When can answers differ?
+
+* Hardware (Intel, AMD, A64FX, ...)
+
+* Compilers (``gcc``, ``ifort``, ...)
+
+* Libraries (``libm.a``)
+
+.. TODO others?
+
+But we still maximize reproducibility over these.
+
+.. (Come back to this at the end...)
+
+
 MOM6 Consortium
 ===============
 
@@ -31,15 +66,11 @@ What is the MOM6 Consortium?
 
    - * .. image:: img/consortium.svg
 
-     * Governance is handled by a verified list of partners.
+     * Codebase is governed by a consortium of research groups.
 
-       Each partner manages their own branch, and contributes to ``main``.
+       Groups manage their own branch, and contribute to ``main``.
 
-       Individuals contribute to partner branches.
-
-
-.. note:: "verified" sounds bad here, something like "government agencies or
-          other responsible partners".  I still don't have the words here.
+       Individuals contribute to their group's branch.
 
 
 Consortium Rules
