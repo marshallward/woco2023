@@ -1,6 +1,6 @@
 digraph git_no_ff {
     rankdir="TB"
-    nodesep=0.5
+    nodesep=0.4
     ranksep=0.25
     outputorder=edgesfirst
 
@@ -29,6 +29,10 @@ digraph git_no_ff {
     ]
     subgraph {
         rank=sink
+        ne [label="dev/ncar", group="ncar"]
+    }
+    subgraph {
+        rank=sink
         me [label="main", group="main"]
     }
     subgraph {
@@ -37,7 +41,7 @@ digraph git_no_ff {
     }
     subgraph {
         rank=sink
-        ne [label="dev/ncar", group="ncar"]
+        se [label="dev/ice", group="ice"]
     }
 
     // Commit nodes
@@ -68,7 +72,7 @@ digraph git_no_ff {
         group="gfdl"
         fillcolor="magenta"
     ]
-    g1 -> g2 -> g3 -> g4
+    g1 -> g2 -> g2p5 -> g3 -> g4
     g5 -> g6
     subgraph {
         rank=source
@@ -77,6 +81,19 @@ digraph git_no_ff {
     gs -> g1 [color="gray", style=dashed, arrowhead=none]
     g4 -> g5 [color="gray", style=dashed, arrowhead=none]
     g6 -> ge [color="gray", style=dashed, arrowhead=none]
+
+    // dev branch (sea ice)
+    node [
+        group="ice"
+        fillcolor="magenta"
+    ]
+    s1 -> s2
+    subgraph {
+        rank=source
+        ss [label="", width=0, height=0, penwidth=0]
+    }
+    ss -> s1 [color="gray", style=dashed, arrowhead=none]
+    s2 -> se [color="gray", style=dashed, arrowhead=none]
 
     // NCAR branch
     node [
@@ -94,8 +111,13 @@ digraph git_no_ff {
     // Branch interactions
     m1 -> g1;
     m1 -> n1;
+
     g4 -> m2;
     m2 -> g5;
     g6 -> m3;
+
+    g2 -> s1;
+    s2 -> g3;
+
     n3 -> m4;
 }

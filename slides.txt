@@ -28,13 +28,13 @@ Rules for Reproducibility
 
 * Code management
 
-* Floating point operations
-
 * Regression and invariance testing
+
+* Rules for Reproducibility
 
 
 What we *Don't* require
-=======================
+-----------------------
 
 When can answers differ?
 
@@ -73,18 +73,19 @@ What is the MOM6 Consortium?
        Individuals contribute to their group's branch.
 
 
-Consortium Rules
-================
+Code Continuity
+===============
 
 .. list-table::
    :widths: 40 60
 
    - * .. image:: img/git_nodes_dev.svg
 
-     * 1. Git history is preserved across all nodes (no matter how messy!)
+     * - Member's commits and branches are preserved
 
-       2. **Absolutely NO** answer changes are permitted unless approved by
-          *all* members.
+       - **NO** answer changes without consent
+
+       Members can work from existing codebases with latest features and fixes.
 
 
 Git Review: Fast Forward
