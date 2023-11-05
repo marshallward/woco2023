@@ -23,14 +23,17 @@ TODO (2-layer with SP restarts)
 
 Reproducibility requires strict handling of floating point computation
 
+Reproducibility Rules
+=====================
+
+Code management
+   Changes to code do not disrupt existing work
+
+Regression and invariance testing
+   Canonical runs remain bit reproducible
+
 Rules for Reproducibility
-=========================
-
-* Code management
-
-* Regression and invariance testing
-
-* Rules for Reproducibility
+   Follow ... (blabla)
 
 
 What we *Don't* require
@@ -123,12 +126,54 @@ GFDL PR life Cycle
 5. Rebase into node
 
 
-CI Testing
-==========
+Regression Testing
+==================
+
+Global energy at full precision
+
+.. code:: mathematica
+
+  Step   Days   Energy/Mass [m2 s-2]     Mean Sea Level [m]   ...
+
+     0   0.00   7.2161166068132286E-27   1.8190E-12           ...
+    12   0.50   2.7781004671136538E-04   1.1369E-12           ...
+    24   1.00   2.7734897826598717E-04   1.8190E-12           ...
+
+Differences are flagged as regressions.
 
 
+Floating Point Review
+---------------------
+
+.. image:: img/ieee_float_fmt.svg
+   :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
+
+.. math::
+
+   \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
+      \times (1 + {\color{pink} \alpha})
+
+* Smallest fractional diff:
+  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+
+* 17 digits to uniquely specify a result
 
 
+Diagnostic Reproducibility
+==========================
+
+.. code:: mathematica
+
+     u-point: ocean_model-u
+       min  = -6.7187595818683776E-03  max  =  3.3480219779204019E-02
+       mean =  1.1239682303793666E-04  bits = 21851
+     v-point: ocean_model-v
+       min  = -8.3469699425156359E-03  max  =  6.8420831486068704E-03
+       mean =  1.2076392816784489E-03  bits = 18606
+     h-point: ocean_model-h
+       min  =  9.9999999999999915E-04  max  =  5.6265092225099863E+02
+       mean =  3.6490088139048595E+02  bits = 18673
+     ...
 
 
 History management
@@ -139,6 +184,20 @@ Rules of history management:
 1. We **preserve** history of partners ("across nodes")
 
 2. We **rewrite** history of contributors ("within nodes")
+
+
+Tangled History
+===============
+
+.. image:: img/git_branchy.svg
+
+Difficult to test
+
+
+Sacred Timeline
+===============
+
+.. image:: img/git_rebased.svg
 
 
 Why preserve history

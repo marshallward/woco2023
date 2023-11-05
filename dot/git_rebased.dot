@@ -1,0 +1,126 @@
+digraph git_no_ff {
+    rankdir="TB"
+    nodesep=0.2
+    ranksep=0.3
+    //outputorder=edgesfirst
+
+    // Global settings
+    node [
+        style=filled
+        color="black"
+        fontname="Inconsolata"
+        fontcolor=black
+    ]
+    edge [
+        arrowhead=vee
+        color="black"
+        penwidth=2
+    ]
+
+    // Branch label nodes
+    node [
+        fixedsize=false
+        penwidth=0
+        fillcolor=none
+        shape=none
+        width=0
+        height=0
+        margin="0.05"
+    ]
+    subgraph {
+        rank=sink
+        me [label="dev/gfdl", group="main"]
+    }
+    subgraph {
+        rank=sink
+        ae [label="user/a", group="a"]
+    }
+    subgraph {
+        rank=sink
+        be [label="user/b", group="b"]
+    }
+    subgraph {
+        rank=sink
+        ce [label="user/c", group="c"]
+    }
+
+    // Commit nodes
+    node [
+        width=0.2
+        height=0.2
+        label=""
+        shape=circle
+        penwidth=2
+    ]
+
+    // main branch
+    edge [weight = 2]
+    node [
+        group="main"
+        fillcolor="#56B4E9"
+    ]
+    m1 -> mb1 -> ma1 -> ma2 -> ma3 -> ma4 -> mc1
+    mb1 [fillcolor="#F0E442"]
+    ma1 [fillcolor="#CC79A7"]
+    ma2 [fillcolor="#CC79A7"]
+    ma3 [fillcolor="#CC79A7"]
+    ma4 [fillcolor="#CC79A7"]
+    mc1 [fillcolor="#009E73"]
+    subgraph {
+        rank=source
+        ms [label="", width=0, height=0, penwidth=0]
+    }
+    ms -> m1
+    mc1 -> me [color="gray", style=dashed, arrowhead=none]
+// user C
+    node [
+        group="c"
+        fillcolor = "#009E73"
+    ]
+    //subgraph {
+    //    rank=source
+    //    cs [label="", width=0, height=0, penwidth=0]
+    //}
+    //cs -> c1 -> ce [color="gray", style=dashed, arrowhead=none]
+    c1 -> ce [color="gray", style=dashed, arrowhead=none]
+
+    // user A
+    node [
+        group="a"
+        fillcolor="#CC79A7"
+    ]
+    a1 -> a2
+    a3 -> a4
+    subgraph {
+        rank=source
+        as [label="", width=0, height=0, penwidth=0]
+    }
+    as -> a1 [color="gray", style=dashed, arrowhead=none]
+    a2 -> a3 [color="gray", style=dashed, arrowhead=none]
+    a4 -> ae [color="gray", style=dashed, arrowhead=none]
+
+    // user B
+    node [
+        group="b"
+        fillcolor="#F0E442" 
+    ]
+    subgraph {
+        rank=source
+        bs [label="", width=0, height=0, penwidth=0]
+    }
+    bs -> b1 -> be [color="gray", style=dashed, arrowhead=none]
+
+    // Branch interactions
+    m1 -> b1
+    mb1 -> a1
+    ma2 -> a3
+    ma4 -> c1
+
+    edge [color="gray"]
+    a1 -> ma1
+    a2 -> ma2
+    a3 -> ma3
+    a4 -> ma4
+    b1 -> mb1
+    c1 -> mc1 
+}

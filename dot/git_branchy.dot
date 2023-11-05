@@ -1,0 +1,122 @@
+digraph git_no_ff {
+    rankdir="TB"
+    nodesep=0.2
+    ranksep=0.25
+    outputorder=edgesfirst
+
+    // Global settings
+    node [
+        style=filled
+        color="black"
+        fontname="Inconsolata"
+        fontcolor=black
+    ]
+    edge [
+        arrowhead=vee
+        color="black"
+        penwidth=2
+    ]
+
+    // Branch label nodes
+    node [
+        fixedsize=false
+        penwidth=0
+        fillcolor=none
+        shape=none
+        width=0
+        height=0
+        margin="0.05"
+    ]
+    subgraph {
+        rank=sink
+        me [label="dev/gfdl", group="main"]
+    }
+    subgraph {
+        rank=sink
+        ae [label="user/a", group="a"]
+    }
+    subgraph {
+        rank=sink
+        be [label="user/b", group="b"]
+    }
+    subgraph {
+        rank=sink
+        ce [label="user/c", group="c"]
+    }
+
+    // Commit nodes
+    node [
+        width=0.2
+        height=0.2
+        label=""
+        shape=circle
+        penwidth=2
+    ]
+
+    // main branch
+    node [
+        group="main"
+        fillcolor="#56B4E9"
+    ]
+    m1 -> m2 -> m3 -> m4 -> m5
+    subgraph {
+        rank=source
+        ms [label="", width=0, height=0, penwidth=0]
+    }
+    ms -> m1
+    m5 -> me [color="gray", style=dashed, arrowhead=none]
+
+    // user A
+    node [
+        group="a"
+        fillcolor="#CC79A7"
+    ]
+    a1 -> a2
+    a3 -> a4
+    subgraph {
+        rank=source
+        as [label="", width=0, height=0, penwidth=0]
+    }
+    as -> a1 [color="gray", style=dashed, arrowhead=none]
+    a2 -> a3 [color="gray", style=dashed, arrowhead=none]
+    a4 -> ae [color="gray", style=dashed, arrowhead=none]
+
+    // user B
+    node [
+        group="b"
+        //fillcolor="#009E73"
+        fillcolor="#F0E442" 
+    ]
+    b1
+    subgraph {
+        rank=source
+        bs [label="", width=0, height=0, penwidth=0]
+    }
+    bs -> b1 -> be [color="gray", style=dashed, arrowhead=none]
+
+    // user C
+    node [
+        group="c"
+        fillcolor = "#009E73"
+    ]
+    c1
+    subgraph {
+        rank=source
+        cs [label="", width=0, height=0, penwidth=0]
+    }
+    cs -> c1 -> ce [color="gray", style=dashed, arrowhead=none]
+
+    // Branch interactions
+    m1 -> a1
+    m1 -> b1
+
+    a2 -> m3
+    a4 -> m4
+
+    m2 -> c1
+    m3 -> a3
+
+    b1 -> m2
+    
+    c1 -> m5 
+}
