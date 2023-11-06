@@ -123,7 +123,7 @@ Parentheses work, but have cumulant errors:
 
 .. math::
 
-   \sum{\phi} = (\phi_1 + (\phi_2 + ( \phi_3 + ... )))
+   \sum{\phi} = \phi_1 + (\phi_2 + ( \phi_3 + ... ))
 
 Fixed-precision is accurate and independent of order:
 
@@ -164,6 +164,9 @@ The ``sum()`` intrinsic is ambiguous!
 GFDL PR life Cycle
 ==================
 
+.. image:: img/life_cycle.svg
+
+
 1. User submits to node by PR
 
 2. Automated verification testing
@@ -173,6 +176,8 @@ GFDL PR life Cycle
 4. Validation by regression testing
 
 5. Rebase into node codebase
+
+
 
 
 Verification Testing
@@ -321,10 +326,10 @@ Summary
 =======
 
 Manage the code?
-   Administered by the *MOM6 Consortium*, 
+   Administered by the *MOM6 Consortium*,
 
 Regression testing?
    TODO
 
 Bit reproducibility?
-   Explicit order of operations, 
+   Explicit order of operations,
