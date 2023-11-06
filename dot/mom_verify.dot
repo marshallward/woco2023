@@ -1,0 +1,93 @@
+digraph testing {
+    fontname = helvetica
+    fontcolor = white
+    labeljust = r
+    node [
+        style = filled,
+        fontname = helvetica
+    ]
+
+    concentrate = true
+    bgcolor = transparent
+
+    submit [label = "Submit to CI\n(GitHub Actions)"]
+
+    codestyle [label = "Code Style Check"]
+
+    build1 [label="Symmetric"];
+    build2 [label="Asymmetric"];
+    build3 [label="OpenMP"];
+
+    build_verify [label="Verify builds", shape=rectangle]
+
+    test1 [label="Grid Memory"]
+    test2 [label="Dimensions"]
+    test3 [label="Rotation"]
+    test4 [label="Initialization"]
+
+    t1_1 [label="tc1"]
+    t2_1 [label="tc2"]
+    t3_1 [label="tc3"]
+
+    t1_2 [label="tc1"]
+    t2_2 [label="tc2"]
+    t3_2 [label="tc3"]
+
+    t1_3 [label="tc1"]
+    t2_3 [label="tc2"]
+    t3_3 [label="tc3"]
+
+    t1_4 [label="tc1"]
+    t2_4 [label="tc2"]
+    t3_4 [label="tc3"]
+
+    verify_results [label="Verify results", shape=rectangle]
+
+    validate [label="Local validation"]
+
+    submit -> codestyle
+    codestyle -> {build1, build2, build3}
+    {build1, build2, build3} -> build_verify
+    build_verify -> {test1, test2, test3, test4}
+    test1 -> {t1_1, t2_1, t3_1}
+    test2 -> {t1_2, t2_2, t3_2}
+    test3 -> {t1_3, t2_3, t3_3}
+    test4 -> {t1_4, t2_4, t3_4}
+
+    t1_1 -> verify_results
+    t2_1 -> verify_results
+    t3_1 -> verify_results
+
+    t1_2 -> verify_results
+    t2_2 -> verify_results
+    t3_2 -> verify_results
+
+    t1_3 -> verify_results
+    t2_3 -> verify_results
+    t3_3 -> verify_results
+
+    t1_4 -> verify_results
+    t2_4 -> verify_results
+    t3_4 -> verify_results
+
+    verify_results -> validate
+
+    subgraph cluster_build {
+        style=filled
+        label="Compile"
+        bgcolor = grey
+        labeljust = r
+        build1; build2; build3
+    }
+    subgraph cluster_test {
+        style=filled
+        label="Run tests"; 
+        bgcolor = grey
+        labeljust = r
+        test1; test2; test3; test4
+        t1_1; t2_1; t3_1
+        t1_2; t2_2; t3_2
+        t1_3; t2_3; t3_3
+        t1_4; t2_4; t3_4
+    }
+}

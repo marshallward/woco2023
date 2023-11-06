@@ -1,0 +1,45 @@
+digraph testing {
+    rankdir="LR"
+    fontname = helvetica
+    bgcolor = transparent
+
+    node [
+        style = filled
+        fontname = helvetica
+    ]
+    edge [
+        color = white
+    ]
+
+    submit [
+        label = "Submit to\ndev/gfdl"
+        shape = "circle"
+    ]
+    ci [
+        label = "CI\nVerification"
+        shape = "doublecircle"
+    ]
+    review [
+        label = "Review\nchanges"
+        shape = "circle"
+    ]
+    regression [
+        label = "Regression\ntesting"
+        shape = "doublecircle"
+    ]
+    merge [
+        label = "Rebase into\ndev/gfdl"
+        shape = "circle"
+    ]
+
+    edge[weight=4]
+    submit:e -> ci
+    ci -> review
+    review -> regression
+    regression -> merge
+
+    edge[weight=1]
+    ci:sw -> submit
+    review -> submit
+    regression -> submit
+}
