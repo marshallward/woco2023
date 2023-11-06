@@ -66,6 +66,16 @@ digraph GitRepos {
     access -> main [dir = both]
     kiost -> main [dir = both]
 
+    // Connect the nodes
+    gfdl -> ncar [dir=both]
+    ncar -> fsu [dir=both]
+    fsu -> nasa [dir=both]
+    nasa -> ncep [dir=both]
+    ncep -> esmg [dir=both]
+    esmg -> access [dir=both]
+    access -> kiost [dir=both]
+    kiost -> gfdl [dir=both]
+
     subgraph gfdl_users {
         node [label = "user", fillcolor = "deepskyblue", width=0.5]
         u1_gfdl -> gfdl

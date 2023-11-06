@@ -26,14 +26,14 @@ Reproducibility requires strict handling of floating point computation
 Reproducibility Rules
 =====================
 
-Code management
-   Changes to code do not disrupt existing work
+Use bit-reproducible expressions
+   Numerical expressions must be predictable
 
-Regression and invariance testing
-   Canonical runs remain bit reproducible
+Confirm model output
+   Solutions must pass verification testing
 
-Rules for Reproducibility
-   Follow ... (blabla)
+Preserve existing solutions
+   Changes to code must not disrupt existing research
 
 
 What we *Don't* require
@@ -54,76 +54,131 @@ But we still maximize reproducibility over these.
 .. (Come back to this at the end...)
 
 
-MOM6 Consortium
+Bit Reproducibility
+===================
+
+1. Ambiguous ordering is rejected:
+
+   .. math::
+
+      x + y + z
+
+2. No ambiguous functions::
+
+      sin(), exp(), z**6, ...
+
+3. Use ``reproducing_sum()`` for global metrics
+
+
+.. notes::
+
+   On the same note, no ``matmul()``
+
+
+Addition Associativity
+======================
+
+What is :math:`10^{-16} + 1 - 1`?  Ambiguous!
+
+.. math::
+
+   (10^{-16} + 1) - 1 &\equiv 0 \\
+   10^{-16} + (1 - 1) &= 10^{-16}
+
+Residuals below ULP :math:`\left(2 \times 10^{-16}\right)` are lost.
+
+.. notes::
+
+   ULP: Unit of least precision (or lowest bit)
+
+   10^-16 is below the current ULP (2x10^-16), so is lost in the first example.
+
+   Cancellation in the second summation shifts ULP, preserving 10^-16.
+
+
+Transcendentals
 ===============
 
-.. image:: img/consortium.svg
-   :width: 80%
+How is ``sin(x)`` computed?  Ambiguous!
+
+.. math::
+
+   f(48^\circ) = 2 \Omega \sin \left( \frac{48 \pi}{180} \right)
+
+.. code:: mathematica
+
+   glibc 2.22: 0.108381727637274115E-03 (3F1C695FE71A3FE4)
+         2.26: 0.108381727637274128E-03 (3F1C695FE71A3FE5)
+
+Other compilers may not even use libm!
+
+Avoid transcendentals where possible, manage dependencies when
+necessary.
 
 
-What is the MOM6 Consortium?
-----------------------------
+Global Summation
+================
 
-.. list-table::
-   :widths: 50 50
+Parentheses work, but have cumulant errors:
 
-   - * .. image:: img/consortium.svg
+.. math::
 
-     * Codebase is governed by a consortium of research groups.
+   \sum{\phi} = (\phi_1 + (\phi_2 + ( \phi_3 + ... )))
 
-       Groups manage their own branch, and contribute to ``main``.
+Fixed-precision is accurate and independent of order:
 
-       Individuals contribute to their group's branch.
+.. image:: img/efp_sum.svg
+   :target: https://doi.org/10.1016/j.parco.2014.04.007
 
+The ``sum()`` intrinsic is ambiguous!
 
-Code Continuity
-===============
+.. notes::
 
-.. list-table::
-   :widths: 40 60
+   Parentheses are OK for cumulant sums, but there are problems:
 
-   - * .. image:: img/git_nodes_dev.svg
+   - Must gather to one rank/thread before summing
 
-     * - Member's commits and branches are preserved
+   - Cumulant errors depend on order, threaten accuracy
 
-       - **NO** answer changes without consent
+   Cumulant sums over multiple bins resolve these issues.
 
-       Members can work from existing codebases with latest features and fixes.
+   Hallberg and Adcroft, 2014: An Order-invariant Real-to-Integer Conversion
+   Sum.  Parallel Computing, 40(5-6), DOI:10.1016/j.parco.2014.04.007
 
+   Alistair says:
 
-Git Review: Fast Forward
-------------------------
+   Many people are aware that those last digits we write out vary depending on
+   the order of summation. Not so for us which is why we can use it as a metric
+   for detecting regression.
 
-.. list-table::
-   :widths: 50 50
+   Bob says:
 
-   - * .. image:: img/git_ff.svg
+   With the global reproducing sums, we are able to get identical values to
+   roundoff compared with the single largest value in the sum, rather than
+   roundoff compared with the sum itself.  For an ocean model on a 1000x1000
+   grid, we are routinely able to detect global non-conservation that is larger
+   than about 1 part in 10^20.
 
-       ``git merge``
-
-     * .. image:: img/git_no_ff.svg
-
-       ``git merge --no-ff``
-
-Merge commits (``--no-ff``) support history preservation.
 
 
 GFDL PR life Cycle
 ==================
 
-1. User submission to node
+1. User submits to node by PR
 
-2. Automated (CI) testing
+2. Automated verification testing
 
-   Currently, incoherent mash of unit and integrated testing
-
-3. Node review
+3. Code review
 
 4. Validation by regression testing
 
-   - Explain in detail
+5. Rebase into node codebase
 
-5. Rebase into node
+
+Verification Testing
+====================
+
+
 
 
 Regression Testing
@@ -200,6 +255,60 @@ Sacred Timeline
 .. image:: img/git_rebased.svg
 
 
+MOM6 Consortium
+===============
+
+.. image:: img/consortium.svg
+   :width: 80%
+
+
+What is the MOM6 Consortium?
+----------------------------
+
+.. list-table::
+   :widths: 50 50
+
+   - * .. image:: img/consortium.svg
+
+     * Codebase is governed by a consortium of research groups.
+
+       All changes to the "hub" must be tracked and preserved.
+
+       Groups manage their own branch, and contribute to ``main``.
+
+
+Code Continuity
+===============
+
+.. list-table::
+   :widths: 40 60
+
+   - * .. image:: img/git_nodes_dev.svg
+
+     * - Member's commits and branches are preserved
+
+       - **NO** answer changes without consent
+
+       Members can work from existing codebases with latest features and fixes.
+
+
+Git Review: Fast Forward
+------------------------
+
+.. list-table::
+   :widths: 50 50
+
+   - * .. image:: img/git_ff.svg
+
+       ``git merge``
+
+     * .. image:: img/git_no_ff.svg
+
+       ``git merge --no-ff``
+
+Merge commits (``--no-ff``) support history preservation.
+
+
 Why preserve history
 ====================
 
@@ -208,25 +317,14 @@ Why preserve history
 2. Allow *cross-node* activity, e.g. sharing commits across
 
 
-Bit Reproducibility
-===================
+Summary
+=======
 
-1. Explicit order of operations:
+Manage the code?
+   Administered by the *MOM6 Consortium*, 
 
-   .. math::
+Regression testing?
+   TODO
 
-      (a + b) + c \neq a + (b + c)
-
-2. No ambiguous operators::
-
-      sum(), exp(), z**6, ...
-
-3. High-precision summation
-
-4. Rotation-invariant stencils
-
-
-
-
-
-
+Bit reproducibility?
+   Explicit order of operations, 
