@@ -75,8 +75,8 @@ Bit Reproducibility
    On the same note, no ``matmul()``
 
 
-Addition Associativity
-======================
+Associativity of Floats
+-----------------------
 
 What is :math:`10^{-16} + 1 - 1`?  Ambiguous!
 
@@ -97,7 +97,7 @@ Residuals below ULP :math:`\left(2 \times 10^{-16}\right)` are lost.
 
 
 Transcendentals
-===============
+---------------
 
 How is ``sin(x)`` computed?  Ambiguous!
 
@@ -117,7 +117,7 @@ necessary.
 
 
 Global Summation
-================
+----------------
 
 Parentheses work, but have cumulant errors:
 
@@ -178,16 +178,14 @@ GFDL PR life Cycle
 5. Rebase into node codebase
 
 
-
-
 Verification Testing
 ====================
 
-
+.. image:: img/mom_verify.svg
 
 
 Regression Testing
-==================
+------------------
 
 Global energy at full precision
 
@@ -200,6 +198,23 @@ Global energy at full precision
     24   1.00   2.7734897826598717E-04   1.8190E-12           ...
 
 Differences are flagged as regressions.
+
+
+Diagnostic Reproducibility
+--------------------------
+
+.. code:: mathematica
+
+     u-point: ocean_model-u
+       min  = -6.7187595818683776E-03  max  =  3.3480219779204019E-02
+       mean =  1.1239682303793666E-04  bits = 21851
+     v-point: ocean_model-v
+       min  = -8.3469699425156359E-03  max  =  6.8420831486068704E-03
+       mean =  1.2076392816784489E-03  bits = 18606
+     h-point: ocean_model-h
+       min  =  9.9999999999999915E-04  max  =  5.6265092225099863E+02
+       mean =  3.6490088139048595E+02  bits = 18673
+     ...
 
 
 Floating Point Review
@@ -219,31 +234,26 @@ Floating Point Review
 * 17 digits to uniquely specify a result
 
 
-Diagnostic Reproducibility
-==========================
+Usual tests
+===========
 
-.. code:: mathematica
+* Restart: dt = 2*(dt/2)
 
-     u-point: ocean_model-u
-       min  = -6.7187595818683776E-03  max  =  3.3480219779204019E-02
-       mean =  1.1239682303793666E-04  bits = 21851
-     v-point: ocean_model-v
-       min  = -8.3469699425156359E-03  max  =  6.8420831486068704E-03
-       mean =  1.2076392816784489E-03  bits = 18606
-     h-point: ocean_model-h
-       min  =  9.9999999999999915E-04  max  =  5.6265092225099863E+02
-       mean =  3.6490088139048595E+02  bits = 18673
-     ...
+* NaN init
+
+* "modest" optimization
+
+* grid (symmetric/nonsymmetric)
 
 
-History management
-==================
+Unusual tests
+=============
 
-Rules of history management:
+* "Local" regression
 
-1. We **preserve** history of partners ("across nodes")
+* dimensional
 
-2. We **rewrite** history of contributors ("within nodes")
+* Rotational
 
 
 Tangled History
@@ -314,6 +324,16 @@ Git Review: Fast Forward
 Merge commits (``--no-ff``) support history preservation.
 
 
+History management
+==================
+
+Rules of history management:
+
+1. We **preserve** history of partners ("across nodes")
+
+2. We **rewrite** history of contributors ("within nodes")
+
+
 Why preserve history
 ====================
 
@@ -325,11 +345,21 @@ Why preserve history
 Summary
 =======
 
-Manage the code?
-   Administered by the *MOM6 Consortium*,
+Bit reproducibility?
+   Restrict model to **non-ambiguous** operations
 
 Regression testing?
    TODO
 
-Bit reproducibility?
-   Explicit order of operations,
+Code security?
+   Administered by the **MOM6 Consortium**
+
+
+Beyond Correctness
+==================
+
+* Platform-independent computation
+
+* Code coverage after compilation
+
+* Automated performance monitoring
