@@ -1,0 +1,21 @@
+graph stencil {
+    node [
+        label = ""
+        shape = circle
+        style = filled
+        fillcolor = white
+        fontname = helvetica
+        fontcolor = white
+    ]
+    bgcolor = transparent
+
+    11 [label="A", fillcolor=red]
+    12 [label="B", fillcolor=red]
+    21 [label="C", fillcolor=blue]
+    22 [label="D", fillcolor=blue]
+
+    {rank = same; 11 -- 12}
+    {rank = same; 21 -- 22}
+    11 -- 21
+    12 -- 22
+}

@@ -19,9 +19,10 @@ TODO
 MOM6 sensitivity
 ================
 
-TODO (2-layer with SP restarts)
+.. figure:: media/twolayer.mp4
 
-Reproducibility requires strict handling of floating point computation
+Minor deviation leads to :math:`O(1)` difference
+
 
 Reproducibility Rules
 =====================
@@ -253,6 +254,112 @@ Unusual tests
 * dimensional
 
 * Rotational
+
+
+Index Rotation
+--------------
+
+.. list-table::
+
+   * - .. image:: img/rotate_grid1.svg
+          :width: 70%
+
+     - .. image:: img/rotate_grid2.svg
+          :width: 70%
+
+.. image:: img/rotate_mem.svg
+          :width: 65%
+
+
+.. notes::
+
+   Perhaps "rotation" is not the best term, since it is more like a reordering
+   of the array.
+
+   But I think it is accurate to call it a rotation of the index map, hence the
+   term "index rotation".
+
+
+Invariant stencils
+------------------
+
+:math:`\phi^{(c)}_{i,j} = \frac{1}{4} (\phi_A + \phi_B + \phi_C + \phi_D)`
+
+.. image:: img/stencil.svg
+   :class: float
+   :width: 22%
+
+.. list-table::
+
+   * - .. image:: img/stencil1.svg
+
+     - :math:`\frac{1}{4} (
+            ({\color{LightCoral} \phi_A} + {\color{LightCoral} \phi_B})
+            + ({\color{LightSkyBlue} \phi_C} + {\color{LightSkyBlue} \phi_D})
+       )`
+
+       :math:`\frac{1}{4} (
+            ({\color{LightCoral} \phi_A} + {\color{LightSkyBlue} \phi_C})
+            + ({\color{LightCoral} \phi_B} + {\color{LightSkyBlue} \phi_D})
+       )`
+
+   * - .. image:: img/stencil2.svg
+
+     - :math:`\frac{1}{4} (
+            ({\color{LightCoral} \phi_A + \phi_D})
+            + ({\color{LightSkyBlue} \phi_B + \phi_C})
+       )`
+
+.. notes::
+
+   Example: Interpolation from vertex to center point
+
+   The ideal outcome is to construct the stencil in a rotationally invariant
+   form.
+
+   The first example will evaluate its terms in a different order after a
+   quarter turn.
+
+   The second form is rotationally invariant to any number of quarter turns.
+
+
+Curated Example
+===============
+
+.. include:: src/git.log
+   :code: txt
+
+
+Commits as email
+----------------
+
+* Pre-git, commits were *emails* sent to maintainers
+
+   * The patch was the commit
+   
+   * The log was the email (subject + body)
+
+* Emails follow a standard format (RFC 5822)
+
+   * "Lines … SHOULD be limited to 78 characters"
+   
+   * Subject reduced to ~50, leave space for hash
+
+The closer you follow these rules, the better the results
+
+
+Commits in Linux
+----------------
+
+   Commit messages to me are almost as important as the code change itself.
+
+   If you can explain the code change to me, I will trust the code.
+
+Linus Torvalds, Linux OSS 2020
+
+.. notes::
+
+   https://www.youtube.com/watch?v=H8Gd9t7FQqI
 
 
 Tangled History

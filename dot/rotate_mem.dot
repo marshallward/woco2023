@@ -1,0 +1,50 @@
+digraph rotation {
+    rankdir = TB
+    bgcolor = transparent
+    node [
+        shape = record
+        style = filled
+        fontname = helvetica
+        fontcolor = white
+    ]
+
+    mem1 [
+        shape = none
+        label=<<table border="0" cellspacing="0">
+                <tr>
+                  <td port="port00" border="1" bgcolor="#fb6a4a">0,0</td>
+                  <td port="port01" border="1" bgcolor="#ef3b2c">0,1</td>
+                  <td port="port02" border="1" bgcolor="#cb181d">0,2</td>
+                  <td port="port03" border="1" bgcolor="#99000d">0,3</td>
+                  <td port="port20" border="1" bgcolor="#74c476">1,0</td>
+                  <td port="port21" border="1" bgcolor="#41ab5d">1,1</td>
+                  <td port="port22" border="1" bgcolor="#238b45">1,2</td>
+                  <td port="port23" border="1" bgcolor="#005a32">1,3</td>
+                  <td port="port10" border="1" bgcolor="#6baed6">2,0</td>
+                  <td port="port11" border="1" bgcolor="#4292c6">2,1</td>
+                  <td port="port12" border="1" bgcolor="#2171b5">2,2</td>
+                  <td port="port13" border="1" bgcolor="#084594">2,3</td>
+                </tr>
+              </table>>
+    ]
+
+    mem2 [
+        shape = none
+        label=<<table border="0" cellspacing="0">
+                <tr>
+                  <td port="rot10" border="1" bgcolor="#6baed6">0,0</td>
+                  <td port="rot20" border="1" bgcolor="#74c476">0,1</td>
+                  <td port="rot00" border="1" bgcolor="#fb6a4a">0,2</td>
+                  <td port="rot11" border="1" bgcolor="#4292c6">1,0</td>
+                  <td port="rot21" border="1" bgcolor="#41ab5d">1,1</td>
+                  <td port="rot01" border="1" bgcolor="#ef3b2c">1,2</td>
+                  <td port="rot12" border="1" bgcolor="#2171b5">2,0</td>
+                  <td port="rot22" border="1" bgcolor="#238b45">2,1</td>
+                  <td port="rot02" border="1" bgcolor="#cb181d">2,2</td>
+                  <td port="rot13" border="1" bgcolor="#084594">3,0</td>
+                  <td port="rot23" border="1" bgcolor="#005a32">3,1</td>
+                  <td port="rot03" border="1" bgcolor="#99000d">3,2</td>
+                </tr>
+              </table>>
+    ]
+}
