@@ -31,7 +31,9 @@ reveal.js/css/theme/gfdl.css: gfdl.css
 index.html : slides.txt gfdl.revealjs reveal.js/css/theme/gfdl.css $(DOTFIGURES) $(SOURCE)
 	pandoc ${FLAGS} $< -o $@
 	sed -i 's/^" data-start-line=/"><code data-start-line=/g' $@
+	#sed -i 's/^"><code>/">/g' $@
 	sed -i 's/<li class="fragment"/<li/g' $@
+	sed -i 's/<video /<video autoplay loop /g' $@
 
 img/%.svg: dot/%.dot
 	dot -Tsvg $^ > $@
@@ -41,8 +43,4 @@ img/fixedprec.svg: dot/fixedprec.dot
 
 clean:
 	rm -f index.html
-	rm -f build.html
-	rm -f contrib.html
-	rm -f develop.html
-	rm -f internals.html
 	rm -f $(DOTFIGURES)

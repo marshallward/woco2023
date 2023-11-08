@@ -7,7 +7,6 @@ The MOM6 Development Cycle
 :date: 2023-11-09
 :url: https://marshallward.org/woco2023/slides.html
 :preface:
-   TODO
 
 
 MOM6 Ocean Model
@@ -57,29 +56,31 @@ But we still try to maximize reproducibility.
 .. (Come back to this at the end...)
 
 
-Bit Reproducibility
-===================
+..
 
-1. Ambiguous ordering is rejected:
+   Bit Reproducibility
+   ===================
+   
+   1. Ambiguous ordering is rejected:
+   
+      .. math::
+   
+         x + y + z
+   
+   2. No ambiguous functions::
+   
+         sin(), exp(), z**6, ...
+   
+   3. Use ``reproducing_sum()`` for global metrics
+   
+   
+   .. notes::
+   
+      On the same note, no ``matmul()``
 
-   .. math::
 
-      x + y + z
-
-2. No ambiguous functions::
-
-      sin(), exp(), z**6, ...
-
-3. Use ``reproducing_sum()`` for global metrics
-
-
-.. notes::
-
-   On the same note, no ``matmul()``
-
-
-Associativity of Floats
------------------------
+Float Order-of-Operations
+=========================
 
 What is :math:`10^{-16} + 1 - 1`?  Ambiguous!
 
@@ -100,7 +101,7 @@ Residuals below ULP :math:`\left(2 \times 10^{-16}\right)` are lost.
 
 
 Transcendentals
----------------
+===============
 
 How is ``sin(x)`` computed?  Ambiguous!
 
@@ -113,18 +114,16 @@ How is ``sin(x)`` computed?  Ambiguous!
    glibc 2.22: 0.108381727637274115E-03 (3F1C695FE71A3FE4)
          2.26: 0.108381727637274128E-03 (3F1C695FE71A3FE5)
 
-Other compilers may not even use libm!
-
 Avoid transcendentals where possible, manage dependencies when
 necessary.
 
 
 Global Summation
-----------------
+================
 
 The order of ``sum()`` is ambiguous!
 
-Parentheses work, but have cumulant errors:
+Parentheses work, but may have cumulant errors:
 
 .. math::
 
@@ -230,19 +229,11 @@ Usual tests
 
 * grid (symmetric/nonsymmetric)
 
-
-Unusual tests
-=============
-
 * "Local" regression
 
-* dimensional
 
-* Rotational
-
-
-Dimensional Testing
-===================
+Dimension Test
+==============
 
 .. math::
 
@@ -261,16 +252,17 @@ Dimensional Testing
        * :math:`\left[ u, v \right] = L T^{-1}`
        * :math:`\left[ g \right] = L^2 H^{-1} T^{-2}`
 
-Solutions must be invariant to :math:`L \rightarrow 2^N L`, &c.
+Solutions must be invariant to :math:`L \rightarrow 2^N L`, etc.
 
 .. notes::
 
    Shallow water eqns, a lower dimensional ocean model.
 
+
 ..
 
    Example?
-   ========
+   --------
 
 
 Floating Point Review
@@ -290,27 +282,49 @@ Floating Point Review
 * 17 digits to uniquely specify a result
 
 
-Rotational Testing
-==================
+MOM6 Dimensionality
+-------------------
 
-???
+===== =======  =================
+Unit  Scaling  Name
+===== =======  =================
+s     T        Time
+m     L        Horizontal length
+m     H        Layer thickness
+m     Z        Vertical length
+kg/m3 R        Density
+J/kg  Q        Enthalpy
+===== =======  =================
+
+.. notes::
+
+   The currently tracked units are shown in this table.
+
+   Also look up tracers
 
 
-Index Rotation
---------------
+Rotation Test
+=============
 
 .. list-table::
+   :widths: 50 50
+
+   * - .. image:: media/orig.png
+          :width: 50%
+          :align: center
+
+     - .. image:: media/rotate.png
+          :width: 50%
 
    * - .. image:: img/rotate_grid1.svg
-          :width: 70%
+          :width: 50%
 
      - .. image:: img/rotate_grid2.svg
-          :width: 70%
+          :width: 30%
 
 .. image:: img/rotate_mem.svg
           :width: 65%
-
-
+      
 .. notes::
 
    Perhaps "rotation" is not the best term, since it is more like a reordering
@@ -365,7 +379,7 @@ Meaningful Commits
 .. include:: src/git.log
    :code: txt
 
-Also: *No "typo" commits!*
+Also: *No "fixed my typo" commits!*
 
 
 ----
@@ -411,6 +425,8 @@ Regression Suite
 ================
 
 .. image:: img/mom6_reg_suite.svg
+
+Validate 61 tests using 3 compilers
 
 
 Regression Compilers
@@ -463,7 +479,7 @@ MOM6 Consortium
 ===============
 
 .. image:: img/consortium.svg
-   :width: 80%
+   :width: 75%
 
 
 What is the MOM6 Consortium?

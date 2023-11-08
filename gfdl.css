@@ -1,4 +1,4 @@
-/**
+/*
  * GFDL theme for reveal.js. Nearly identical to the `black.css` theme.
  */
 @import url(../../lib/font/source-sans-pro/source-sans-pro.css);
@@ -27,6 +27,10 @@ body {
 .reveal .slides > section > section {
   line-height: 1.3;
   font-weight: inherit; }
+
+.reveal-viewport {
+  background-color: #25325f
+}
 
 /*********************************************
  * HEADERS
@@ -257,9 +261,7 @@ body {
 .reveal section img.float {
   margin: 15px 0px;
   background: rgba(255, 255, 255, 0.12);
-  /*
   border: 4px solid #fff;
-  */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   float: left;
 }

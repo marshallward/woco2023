@@ -1,58 +1,17 @@
-commit 19f0147067db2d8ec8fb8919bdaa4ee622edd94e
-Author: Robert Hallberg <Robert.Hallberg@noaa.gov>
-Date:   Fri Oct 13 08:34:37 2023 -0400
-
-    +Fix dimensional rescaling with HARMONICS_SAL
-    
-      Corrected dimensional rescaling bugs in the spherical harmonics SAL code.  An
-    issue with horizontal length scaling was corrected by using G%Rad_Earth_L in
-    place of G%Rad_Earth in spherical_harmonics_init.  There are new optional
-    tmp_scale arguments to calc_SAL and spherical_harmonics_forward to allow the
-    rescaling to be undone before calling the reproducing sums.
-    
-      This commit also modifies the call to the reproducing sums in
-    spherical_harmonics_forward so that all real or imaginary components are
-    calculated with a single call, which reduces the cost of the SAL calculation
-    reproducing sums from about 6.7 times the cost with non-reproducing sums to just
-    5.5 times as much in testing with the tides_025 test case.
-    
-      There is also code added to avoid NaNs arising from a square root operating
-    on a negative argument from a 32-bit integer roll-over when a very large
-    number of harmonics components (more than 1024 x 1024) are unadvisedly being
-    used.
-    
-      While this commit corrects the dimensional scaling when HARMONICS_SAL is true,
-    all answers are bitwise identical when no rescaling is used or when the
-    spherical harmonics SAL is not used.  There are new optional arguments to two
-    publicly visible interfaces.
-
-commit 467d1dd016317c2bbd51586ef3960383abc87f31
-Author: Robert Hallberg <Robert.Hallberg@noaa.gov>
-Date:   Wed Aug 16 17:13:38 2023 -0400
-
-    +Remove rescale_grid_bathymetry
-    
-      Removed the unused routine rescale_grid_bathymetry.  This routine was added in
-    August 2018 as a part of the development of the depth unit conversion and
-    dimensional consistency testing, but it is no longer being called now that this
-    conversion is essentially complete (and it has not been called by the code in
-    several years).  For the original commit that first added this code, see
-    github.com/mom-ocean/MOM6/commit/ddc9ed1c33a1b7357b213929118ecaa19ae63f9f.  All
-    answers are bitwise identical.
-
 commit d210cc6cdfd03150306c8ba41612e3380d66c281
 Author: Robert Hallberg <Robert.Hallberg@noaa.gov>
 Date:   Wed Aug 16 17:11:35 2023 -0400
 
     +Remove build_grid_arbitrary
     
-      Removed the unused (and unusable) routine build_grid_arbitrary.  This routine
-    could not have been used because it had a hard-coded STOP call, and comments in
-    it indicated that it should have been deleted in July, 2013.  The run-time
-    parameter setting that would have triggered a call to this routine has been
-    retained for now, but with a fatal error message explaining that this routine
-    has not been implemented.   All answers are bitwise identical in any cases that
-    ran before.
+      Removed the unused (and unusable) routine build_grid_arbitrary.
+      This routine could not have been used because it had a hard-coded
+      STOP call, and comments in it indicated that it should have been
+      deleted in July, 2013.  The run-time parameter setting that would
+      have triggered a call to this routine has been retained for now,
+      but with a fatal error message explaining that this routine has
+      not been implemented.   All answers are bitwise identical in any
+      cases that ran before.
 
 commit 615e57f854db8be8c75a9edba6bb05e3f04a6eb7
 Author: raphael dussin <raphael.dussin@gmail.com>
@@ -73,13 +32,23 @@ Date:   Mon Oct 16 11:33:26 2023 -0500
 
     +Add timestamp and directory to particles restart
     
-    The directory, time and timestamp variables are needed by the particle code in order to write better restart files. I have changed the particles_save_restart interface to add these variables. I have also removed the option to pass temperature and salinity to particles_save_restart, because these variables are not useful for restart.
+    The directory, time and timestamp variables are needed by the
+    particle code in order to write better restart files. I have changed
+    the particles_save_restart interface to add these variables. I have
+    also removed the option to pass temperature and salinity to
+    particles_save_restart, because these variables are not useful for
+    restart.
 
 commit 503a9f4c5f585e258a3d5810cad0b4af073c4fb8
 Author: Alex Huth <huthalexandere@gmail.com>
 Date:   Fri Oct 27 06:59:36 2023 -0400
 
-    ice shelf front advection: When determining a reference thickness for a partially-filled cell, add the reference thickness contribution from a neighboring filled cell proportionate to its flux into the partially-filled cell. This is more accurate than simply taking the average thickness of all neighboring filled cells. Also fixed incorrect bounds. (#475)
+    ice shelf front advection: When determining a reference thickness
+    for a partially-filled cell, add the reference thickness
+    contribution from a neighboring filled cell proportionate to its
+    flux into the partially-filled cell. This is more accurate than
+    simply taking the average thickness of all neighboring filled cells.
+    Also fixed incorrect bounds. (#475)
 
 commit f514529a8a299b8e84512a10062aa524f0a23478
 Author: Alex Huth <huthalexandere@gmail.com>
@@ -87,4 +56,5 @@ Date:   Thu Oct 26 15:11:12 2023 -0400
 
     Ice sheet thickness boundary condition (#474)
     
-    * allow for assigned ice shelf thickness where hmask==3, but still solve for ice sheet velocity
+    * allow for assigned ice shelf thickness where hmask==3, but still
+      solve for ice sheet velocity
