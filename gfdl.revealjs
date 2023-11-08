@@ -270,8 +270,13 @@ $if(maxScale)$
 $endif$
 $if(mathjax)$
         math: {
-          mathjax: '$mathjaxurl$',
+          //mathjax: '$mathjaxurl$',
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.9/MathJax.js',
           config: 'TeX-AMS_HTML-full',
+          "HTML-CSS": {
+              preferredFont: "Neo-Euler",
+              //preferredFont: "Asana-Math",
+          },
           //TeX: {
           //  inlineMath: [['\\(','\\)']],
           //  displayMath: [['\\[','\\]']],
@@ -298,6 +303,7 @@ $endif$
           { src: '$revealjs-url$/plugin/notes/notes.js', async: true }
         ],
         plugins : [ RevealMath, RevealNotes, RevealHighlight],
+        pdfMaxPagesPerSlide: 1,
       });
     </script>
   $for(include-after)$
