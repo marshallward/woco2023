@@ -263,32 +263,37 @@ Dimensional Testing
 
 Solutions must be invariant to :math:`L \rightarrow 2^N L`, &c.
 
-
 .. notes::
 
    Shallow water eqns, a lower dimensional ocean model.
 
-
-
-
-
 ..
 
-   Floating Point Review
-   ---------------------
+   Example?
+   ========
 
-   .. image:: img/ieee_float_fmt.svg
-      :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
 
-   .. math::
+Floating Point Review
+---------------------
 
-      \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
-         \times (1 + {\color{pink} \alpha})
+.. image:: img/ieee_float_fmt.svg
+   :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
 
-   * Smallest fractional diff:
-     :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+.. math::
 
-   * 17 digits to uniquely specify a result
+   \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
+      \times (1 + {\color{pink} \alpha})
+
+* Smallest fractional diff:
+  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+
+* 17 digits to uniquely specify a result
+
+
+Rotational Testing
+==================
+
+???
 
 
 Index Rotation
@@ -359,6 +364,8 @@ Meaningful Commits
 
 .. include:: src/git.log
    :code: txt
+
+Also: *No "typo" commits!*
 
 
 ----
@@ -431,7 +438,7 @@ Tangled History
 
    * - .. image:: img/git_branchy.svg
 
-     - Many active users can create a non-sequential history
+     - Many active users creates a non-sequential history
 
        This severely complicates our ability to track bugs and regressions!
 
