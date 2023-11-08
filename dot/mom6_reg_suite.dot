@@ -1,0 +1,94 @@
+digraph testing {
+    fontname = helvetica
+    fontcolor = white
+    labeljust = r
+    node [
+        style = filled,
+        fontname = helvetica
+    ]
+
+    concentrate = true
+    bgcolor = transparent
+
+    review [label = "Code review"]
+
+    submit [label = "Submit to Local\n(Gaea)"]
+
+    build1 [label="Ocean only"];
+    build2 [label="Ice-Ocean"];
+    build3 [label="Coupled"];
+
+    b1c1 [label="GNU"]
+    b1c2 [label="Intel"]
+    b1c3 [label="Nvidia"]
+
+    b2c1 [label="GNU"]
+    b2c2 [label="Intel"]
+    b2c3 [label="Nvidia"]
+
+    b3c1 [label="GNU"]
+    b3c2 [label="Intel"]
+    b3c3 [label="Nvidia"]
+
+    build_verify [label="Verify builds", shape=rectangle]
+
+    test1 [label="Ocean only"]
+    test2 [label="Coupled"]
+    test3 [label="Ice-Ocean"]
+
+    t1c1 [label="benchmark"]
+    t1c2 [label="double_gyre"]
+    t1c3 [label="DOME"]
+    t1c4 [label="flow_downslope"]
+    t1c5 [label="unit_tests"]
+
+    t2c1 [label="AM2-SIS2-MOM6-1deg"]
+
+    t3c1 [label="OM4_05"]
+    t3c3 [label="OM4_025"]
+    t3c2 [label="Baltic"]
+
+    verify_results [label="Verify results", shape=rectangle]
+
+    validate [label="Merge to dev/gfdl"]
+
+    review -> submit
+    submit -> {build1, build2, build3}
+    build1 -> {b1c1, b1c2, b1c3}
+    build2 -> {b2c1, b2c2, b2c3}
+    build3 -> {b3c1, b3c2, b3c3}
+    {b1c1, b1c2, b1c3, b2c1, b2c2, b2c3, b3c1, b3c2, b3c3} -> build_verify
+
+    build_verify -> {test1, test2, test3}
+
+    test1 -> {t1c1, t1c2, t1c3, t1c4, t1c5}
+    test2 -> {t2c1}
+    test3 -> {t3c1, t3c2, t3c3}
+
+    {t1c1, t1c2, t1c3, t1c4, t1c5, t2c1, t3c1, t3c2, t3c3} -> verify_results
+    verify_results -> validate
+
+    subgraph cluster_build {
+        style=filled
+        label="Compile"
+        bgcolor = grey
+        labeljust = r
+
+        build1; build2; build3;
+        b1c1; b1c2; b1c3;
+        b2c1; b2c2; b2c3;
+        b3c1; b3c2; b3c3;
+    }
+    
+    subgraph cluster_test {
+        style=filled
+        label="Run tests"; 
+        bgcolor = grey
+        labeljust = r
+
+        test1; test2; test3
+        t1c1; t1c2, t1c3; t1c4; t1c5;
+        t2c1;
+        t3c1; t3c2; t3c3;
+    }
+}

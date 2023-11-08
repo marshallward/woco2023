@@ -28,7 +28,7 @@ Reproducibility Rules
 =====================
 
 Use bit-reproducible expressions
-   Numerical expressions must be predictable
+   Numerical expressions must be unambiguous
 
 Confirm model output
    Solutions must pass verification testing
@@ -120,18 +120,18 @@ necessary.
 Global Summation
 ----------------
 
+The order of ``sum()`` is ambiguous!
+
 Parentheses work, but have cumulant errors:
 
 .. math::
 
    \sum{\phi} = \phi_1 + (\phi_2 + ( \phi_3 + ... ))
 
-Fixed-precision is accurate and independent of order:
+Use a fixed-precision format across six integers:
 
 .. image:: img/efp_sum.svg
    :target: https://doi.org/10.1016/j.parco.2014.04.007
-
-The ``sum()`` intrinsic is ambiguous!
 
 .. notes::
 
@@ -217,23 +217,6 @@ Diagnostic Reproducibility
      ...
 
 
-Floating Point Review
----------------------
-
-.. image:: img/ieee_float_fmt.svg
-   :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
-
-.. math::
-
-   \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
-      \times (1 + {\color{pink} \alpha})
-
-* Smallest fractional diff:
-  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
-
-* 17 digits to uniquely specify a result
-
-
 Usual tests
 ===========
 
@@ -254,6 +237,23 @@ Unusual tests
 * dimensional
 
 * Rotational
+
+
+Floating Point Review
+---------------------
+
+.. image:: img/ieee_float_fmt.svg
+   :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
+
+.. math::
+
+   \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
+      \times (1 + {\color{pink} \alpha})
+
+* Smallest fractional diff:
+  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+
+* 17 digits to uniquely specify a result
 
 
 Index Rotation
@@ -284,10 +284,6 @@ Invariant stencils
 ------------------
 
 :math:`\phi^{(c)}_{i,j} = \frac{1}{4} (\phi_A + \phi_B + \phi_C + \phi_D)`
-
-.. image:: img/stencil.svg
-   :class: float
-   :width: 22%
 
 .. list-table::
 
@@ -323,11 +319,32 @@ Invariant stencils
    The second form is rotationally invariant to any number of quarter turns.
 
 
-Curated Example
-===============
+Mandatory Commit Logs
+=====================
 
 .. include:: src/git.log
    :code: txt
+
+
+----
+
+.. list-table::
+   :widths: 45 55
+
+   * - .. image:: media/linus_and_dirk.png
+
+     -
+
+         Commit messages to me are almost as important as the code change
+         itself.
+
+         If you can explain the code change to me, I will trust the code.
+
+Linus Torvalds, Linux OSS 2020
+
+.. notes::
+
+   https://www.youtube.com/watch?v=H8Gd9t7FQqI
 
 
 Commits as email
@@ -336,30 +353,22 @@ Commits as email
 * Pre-git, commits were *emails* sent to maintainers
 
    * The patch was the commit
-   
+
    * The log was the email (subject + body)
 
 * Emails follow a standard format (RFC 5822)
 
    * "Lines … SHOULD be limited to 78 characters"
-   
+
    * Subject reduced to ~50, leave space for hash
 
 The closer you follow these rules, the better the results
 
 
-Commits in Linux
-----------------
+Regression Suite
+================
 
-   Commit messages to me are almost as important as the code change itself.
-
-   If you can explain the code change to me, I will trust the code.
-
-Linus Torvalds, Linux OSS 2020
-
-.. notes::
-
-   https://www.youtube.com/watch?v=H8Gd9t7FQqI
+.. image:: img/mom6_reg_suite.svg
 
 
 Tangled History
@@ -458,7 +467,7 @@ Regression testing?
    TODO
 
 Code security?
-   Administered by the **MOM6 Consortium**
+   Mutual governance by a **consortium** of groups
 
 
 Beyond Correctness
