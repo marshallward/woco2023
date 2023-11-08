@@ -13,7 +13,7 @@ The MOM6 Development Cycle
 MOM6 Ocean Model
 ================
 
-TODO
+.. figure:: media/mom6_relvort.mp4
 
 
 MOM6 sensitivity
@@ -30,11 +30,11 @@ Reproducibility Rules
 Use bit-reproducible expressions
    Numerical expressions must be unambiguous
 
-Confirm model output
-   Solutions must pass verification testing
+Validate model output
+   Model must replicate existing simulations
 
 Preserve existing solutions
-   Changes to code must not disrupt existing research
+   Code changes must not disrupt existing research
 
 
 What we *Don't* require
@@ -46,7 +46,7 @@ When can answers differ?
 
 * Compilers (``gcc``, ``ifort``, ...)
 
-* Libraries (``libm.a``)
+* Libraries (``libm.a``, ...)
 
 .. TODO others?
 
@@ -319,8 +319,8 @@ Invariant stencils
    The second form is rotationally invariant to any number of quarter turns.
 
 
-Mandatory Commit Logs
-=====================
+Meaningful Commits
+==================
 
 .. include:: src/git.log
    :code: txt
@@ -374,25 +374,30 @@ Regression Suite
 Tangled History
 ===============
 
-.. image:: img/git_branchy.svg
+.. list-table::
+   :widths: 45 55
 
-Difficult to test
+   * - .. image:: img/git_branchy.svg
+
+     - Many active users can create a non-sequential history
+
+       This severely complicates our ability to track bugs and regressions!
 
 
-Sacred Timeline
-===============
+Rewrite History!
+================
 
-.. image:: img/git_rebased.svg
+.. list-table::
+   :widths: 35 65
 
 
-History management
-==================
+   * - .. image:: img/git_rebased.svg
 
-Rules of history management:
+     - We aggressively rebase to create a new linear history
 
-1. We **rewrite** history of content into ``dev/gfdl``
+       However, note that we also clobber user history.
 
-2. We **preserve** history across partner nodes
+       How do we preserve existing runs?
 
 
 MOM6 Consortium

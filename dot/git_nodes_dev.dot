@@ -4,6 +4,8 @@ digraph git_no_ff {
     ranksep=0.25
     outputorder=edgesfirst
 
+    bgcolor = transparent
+
     // Global settings
     node [
         style=filled
@@ -12,9 +14,9 @@ digraph git_no_ff {
         fontcolor=black
     ]
     edge [
-        arrowhead=vee
-        color="black"
-        penwidth=2
+        arrowhead = vee
+        color = white
+        penwidth = 2
     ]
 
     // Branch label nodes
@@ -29,19 +31,19 @@ digraph git_no_ff {
     ]
     subgraph {
         rank=sink
-        ne [label="dev/ncar", group="ncar"]
+        ne [label="dev/ncar", group="ncar", fontcolor = white]
     }
     subgraph {
         rank=sink
-        me [label="main", group="main"]
+        me [label="main", group="main", fontcolor = white]
     }
     subgraph {
         rank=sink
-        ge [label="dev/gfdl", group="gfdl"]
+        ge [label="dev/gfdl", group="gfdl", fontcolor = white]
     }
     subgraph {
         rank=sink
-        se [label="dev/ice", group="ice"]
+        se [label="dev/ice", group="ice", fontcolor = white]
     }
 
     // Commit nodes
@@ -63,9 +65,9 @@ digraph git_no_ff {
         rank=source
         ms [label="", width=0, height=0, penwidth=0]
     }
-    //ms -> m1 [color="gray", style=dashed, arrowhead=none]
+    //ms -> m1 [color="lightgray", style=dashed, arrowhead=none]
     ms -> m1
-    m4 -> me [color="gray", style=dashed, arrowhead=none]
+    m4 -> me [color="lightgray", style=dashed, arrowhead=none]
 
     // GFDL branch
     node [
@@ -78,9 +80,9 @@ digraph git_no_ff {
         rank=source
         gs [label="", width=0, height=0, penwidth=0]
     }
-    gs -> g1 [color="gray", style=dashed, arrowhead=none]
-    g4 -> g5 [color="gray", style=dashed, arrowhead=none]
-    g6 -> ge [color="gray", style=dashed, arrowhead=none]
+    gs -> g1 [color="lightgray", style=dashed, arrowhead=none]
+    g4 -> g5 [color="lightgray", style=dashed, arrowhead=none]
+    g6 -> ge [color="lightgray", style=dashed, arrowhead=none]
 
     // dev branch (sea ice)
     node [
@@ -92,8 +94,8 @@ digraph git_no_ff {
         rank=source
         ss [label="", width=0, height=0, penwidth=0]
     }
-    ss -> s1 [color="gray", style=dashed, arrowhead=none]
-    s2 -> se [color="gray", style=dashed, arrowhead=none]
+    ss -> s1 [color="lightgray", style=dashed, arrowhead=none]
+    s2 -> se [color="lightgray", style=dashed, arrowhead=none]
 
     // NCAR branch
     node [
@@ -105,8 +107,8 @@ digraph git_no_ff {
         rank=source
         ns [label="", width=0, height=0, penwidth=0]
     }
-    ns -> n1 [color="gray", style=dashed, arrowhead=none]
-    n3 -> ne [color="gray", style=dashed, arrowhead=none]
+    ns -> n1 [color="lightgray", style=dashed, arrowhead=none]
+    n3 -> ne [color="lightgray", style=dashed, arrowhead=none]
 
     // Branch interactions
     m1 -> g1;

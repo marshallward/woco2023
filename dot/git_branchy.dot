@@ -4,6 +4,8 @@ digraph git_no_ff {
     ranksep=0.25
     outputorder=edgesfirst
 
+    bgcolor = transparent
+
     // Global settings
     node [
         style=filled
@@ -12,36 +14,52 @@ digraph git_no_ff {
         fontcolor=black
     ]
     edge [
-        arrowhead=vee
-        color="black"
-        penwidth=2
+        arrowhead = vee
+        color = white
+        penwidth = 2
     ]
 
     // Branch label nodes
     node [
-        fixedsize=false
-        penwidth=0
-        fillcolor=none
-        shape=none
-        width=0
-        height=0
-        margin="0.05"
+        fixedsize = false
+        penwidth = 0
+        fillcolor = none
+        shape = none
+        width = 0
+        height = 0
+        margin = "0.05"
     ]
     subgraph {
         rank=sink
-        me [label="dev/gfdl", group="main"]
+        me [
+            group = "main"
+            label = "dev/gfdl"
+            fontcolor = white
+        ]
     }
     subgraph {
         rank=sink
-        ae [label="user/a", group="a"]
+        ae [
+            group = "a"
+            label = "user/a"
+            fontcolor = white
+        ]
     }
     subgraph {
         rank=sink
-        be [label="user/b", group="b"]
+        be [
+            group = "b"
+            label = "user/b"
+            fontcolor = white
+        ]
     }
     subgraph {
         rank=sink
-        ce [label="user/c", group="c"]
+        ce [
+            group = "c"
+            label = "user/c"
+            fontcolor = white
+        ]
     }
 
     // Commit nodes
@@ -64,7 +82,7 @@ digraph git_no_ff {
         ms [label="", width=0, height=0, penwidth=0]
     }
     ms -> m1
-    m5 -> me [color="gray", style=dashed, arrowhead=none]
+    m5 -> me [color="lightgray", style=dashed, arrowhead=none]
 
     // user A
     node [
@@ -77,9 +95,9 @@ digraph git_no_ff {
         rank=source
         as [label="", width=0, height=0, penwidth=0]
     }
-    as -> a1 [color="gray", style=dashed, arrowhead=none]
-    a2 -> a3 [color="gray", style=dashed, arrowhead=none]
-    a4 -> ae [color="gray", style=dashed, arrowhead=none]
+    as -> a1 [color="lightgray", style=dashed, arrowhead=none]
+    a2 -> a3 [color="lightgray", style=dashed, arrowhead=none]
+    a4 -> ae [color="lightgray", style=dashed, arrowhead=none]
 
     // user B
     node [
@@ -92,7 +110,7 @@ digraph git_no_ff {
         rank=source
         bs [label="", width=0, height=0, penwidth=0]
     }
-    bs -> b1 -> be [color="gray", style=dashed, arrowhead=none]
+    bs -> b1 -> be [color="lightgray", style=dashed, arrowhead=none]
 
     // user C
     node [
@@ -104,7 +122,7 @@ digraph git_no_ff {
         rank=source
         cs [label="", width=0, height=0, penwidth=0]
     }
-    cs -> c1 -> ce [color="gray", style=dashed, arrowhead=none]
+    cs -> c1 -> ce [color="lightgray", style=dashed, arrowhead=none]
 
     // Branch interactions
     m1 -> a1
