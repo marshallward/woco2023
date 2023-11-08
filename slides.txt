@@ -430,49 +430,45 @@ Code Continuity
 
    - * .. image:: img/git_nodes_dev.svg
 
-     * - Member's commits and branches are preserved
+     * - **All members** must approve merge to ``main``
 
-       - **NO** answer changes without consent
+       - All branches within a node are preserved
 
-       Members can work from existing codebases with latest features and fixes.
+       - Nodes can easily share commits!
 
+..
 
-Git Review: Fast Forward
-------------------------
+   This slide is a bit too pedantic or "in the weeds" for this stage of the
+   talk.
 
-.. list-table::
-   :widths: 50 50
+   Git Review: Fast Forward
+   ------------------------
 
-   - * .. image:: img/git_ff.svg
+   .. list-table::
+      :widths: 50 50
 
-       ``git merge``
+      - * .. image:: img/git_ff.svg
 
-     * .. image:: img/git_no_ff.svg
+          ``git merge``
 
-       ``git merge --no-ff``
+        * .. image:: img/git_no_ff.svg
 
-Merge commits (``--no-ff``) support history preservation.
+          ``git merge --no-ff``
 
-
-Why preserve history
-====================
-
-1. Preserve development activity of nodes, especially hashes for ongoing runs
-
-2. Allow *cross-node* activity, e.g. sharing commits across
+   Merge commits (``--no-ff``) support history preservation.
 
 
 Summary
 =======
 
 Bit reproducibility?
-   Restrict model to **non-ambiguous** operations
+   Restrict model to *non-ambiguous* operations
 
 Regression testing?
-   TODO
+   *Regression* and *self-consistency* testing
 
-Code security?
-   Mutual governance by a **consortium** of groups
+Code preservation?
+   Mutual governance by a *consortium* of groups
 
 
 Beyond Correctness
