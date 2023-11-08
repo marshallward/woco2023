@@ -42,6 +42,8 @@ What we *Don't* require
 
 When can answers differ?
 
+* Aggressive optimization (``-O3 -mavx ...``)
+
 * Hardware (Intel, AMD, A64FX, ...)
 
 * Compilers (``gcc``, ``ifort``, ...)
@@ -50,7 +52,7 @@ When can answers differ?
 
 .. TODO others?
 
-But we still maximize reproducibility over these.
+But we still try to maximize reproducibility.
 
 .. (Come back to this at the end...)
 
@@ -171,9 +173,9 @@ GFDL PR life Cycle
 
 2. Automated verification testing
 
-3. Code review
+3. Code review (by a human)
 
-4. Validation by regression testing
+4. Test for regressions on production machine
 
 5. Rebase into node codebase
 
@@ -239,21 +241,54 @@ Unusual tests
 * Rotational
 
 
-Floating Point Review
----------------------
-
-.. image:: img/ieee_float_fmt.svg
-   :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
+Dimensional Testing
+===================
 
 .. math::
 
-   \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
-      \times (1 + {\color{pink} \alpha})
+   u_t + u u_x + v u_y &= -g h_x \\
+   v_t + u v_x + v v_y &= -g h_y \\
+   h_t + h u_x + h v_y &= 0 \\
 
-* Smallest fractional diff:
-  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+.. list-table::
 
-* 17 digits to uniquely specify a result
+   * - Dimensions:
+       * :math:`L` (horiz. length)
+       * :math:`T` (time)
+       * :math:`H` (layer thickness)
+
+     - Invariants:
+       * :math:`\left[ u, v \right] = L T^{-1}`
+       * :math:`\left[ g \right] = L^2 H^{-1} T^{-2}`
+
+Solutions must be invariant to :math:`L \rightarrow 2^N L`, &c.
+
+
+.. notes::
+
+   Shallow water eqns, a lower dimensional ocean model.
+
+
+
+
+
+..
+
+   Floating Point Review
+   ---------------------
+
+   .. image:: img/ieee_float_fmt.svg
+      :target: https://commons.wikimedia.org/wiki/File:Float_example.svg
+
+   .. math::
+
+      \phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
+         \times (1 + {\color{pink} \alpha})
+
+   * Smallest fractional diff:
+     :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+
+   * 17 digits to uniquely specify a result
 
 
 Index Rotation
@@ -369,6 +404,23 @@ Regression Suite
 ================
 
 .. image:: img/mom6_reg_suite.svg
+
+
+Regression Compilers
+--------------------
+
+* GNU (12.2.0)
+
+  * "Debug" (``-O0``; floating point exceptions)
+
+  * "Repro" (``-O2``; no vectorization)
+
+* Intel (2022.0.2)
+
+* Nvidia (22.3)
+
+Additional testing for OpenMP and compile-time grid selection (symmetric vs
+nonsymmetric).
 
 
 Tangled History
