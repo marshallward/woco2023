@@ -3,6 +3,7 @@ The MOM6 Development Cycle
 ==========================
 
 :author: Marshall Ward
+:organization: NOAA GFDL
 :description: How the MOM6 development cycle ensures correctness and reproducibility
 :date: 2023-11-09
 :url: https://marshallward.org/woco2023/slides.html
@@ -14,6 +15,18 @@ MOM6 Ocean Model
 
 .. figure:: media/mom6_relvort.mp4
 
+.. notes::
+
+   * Showcase what the model can do
+
+   * Diverse range of length and time scales
+
+   * Even more too slow to see
+
+      * Overturning (yrs, decades, ...)
+
+   * Responsibility is to replicate this flow
+
 
 MOM6 sensitivity
 ================
@@ -21,6 +34,18 @@ MOM6 sensitivity
 .. figure:: media/twolayer.mp4
 
 Minor deviation leads to :math:`O(1)` difference
+
+.. notes::
+
+   * Replication is a major challenge
+
+   * Simple two-layer configuration
+
+   * Identical start, saved in double and single precision
+
+   * A single bit can cause similar deviations
+
+   * Both scientific and software challenges
 
 
 Reproducibility Rules
@@ -31,6 +56,16 @@ Reproducibility Rules
 * Code must not change existing solutions
 
 * Changes must not disrupt existing research
+
+.. notes::
+
+   How to navigate this issue?
+
+   * Regression testing requires reproducibility
+
+   * Forecasters require reproducible output
+
+   * Researchers want latest features without answer changes
 
 
 What we *Don't* require
@@ -57,22 +92,22 @@ But we still try to maximize reproducibility.
 
    Bit Reproducibility
    ===================
-   
+
    1. Ambiguous ordering is rejected:
-   
+
       .. math::
-   
+
          x + y + z
-   
+
    2. No ambiguous functions::
-   
+
          sin(), exp(), z**6, ...
-   
+
    3. Use ``reproducing_sum()`` for global metrics
-   
-   
+
+
    .. notes::
-   
+
       On the same note, no ``matmul()``
 
 
@@ -91,6 +126,14 @@ Residuals below ULP :math:`\left(2 \times 10^{-16}\right)` are lost.
 *Use parentheses to set the order of operations*
 
 .. notes::
+
+   * Without parentheses, compilers can reorder
+
+      * Perhaps for a good reason!  But come back to that... (or not?)
+
+   * Scientifically, we may need a particular order!
+
+   * Must use language that respects parentheses
 
    ULP: Unit of least precision (or lowest bit)
 
@@ -115,6 +158,18 @@ How is ``sin(x)`` computed?  Ambiguous!
 
 *Avoid transcendentals where possible, manage dependencies when
 necessary.*
+
+.. notes::
+
+   * Rarely possible to identify the origin of such functions
+
+      * External library? (``libm``)
+
+      * Runtime?
+
+   * Sometimes unavoidable, but strictly speaking they should not be used
+
+   * Note that the power operator ``a**b`` falls under this category!
 
 
 Global Summation
@@ -143,6 +198,10 @@ Sums are stored in fixed-precision using six integers:
    - Cumulant errors depend on order, threaten accuracy
 
    Cumulant sums over multiple bins resolve these issues.
+
+   * Importance of these will be clear in next couple of slides
+
+   ----
 
    Hallberg and Adcroft, 2014: An Order-invariant Real-to-Integer Conversion
    Sum.  Parallel Computing, 40(5-6), DOI:10.1016/j.parco.2014.04.007
@@ -184,6 +243,23 @@ Verification Testing
 
 .. image:: img/mom_verify.svg
 
+CI testing is *platform independent*
+
+.. notes::
+
+   * Sketch of how our CI verifies code contributions
+
+   * Use "verification" in the Barry Boehm "Verification and Validation"
+     sense...
+
+   * Executable is compiled in various modes
+
+      * compile-time grid, code coverage, etc
+
+   * Run "micro-tests" based on larger configs
+
+   * Each test subject to a variety of **invariance** tests
+
 
 State of the Model
 ==================
@@ -198,7 +274,7 @@ Global energy tracked to full precision
     12   0.50   2.7781004671136538E-04   1.1369E-12           ...
     24   1.00   2.7734897826598717E-04   1.8190E-12           ...
 
-Diagnostics cover multiple statistics
+Diagnostics use multiple metrics
 
 .. code:: mathematica
 
@@ -213,12 +289,29 @@ Diagnostics cover multiple statistics
        mean =  3.6490088139048595E+02  bits = 18673
      ...
 
+.. notes::
 
-Standard Tests
-==============
+   * bit-reproducible summation allow for global metrics
+
+   * The CI checks *every diagnostic*
+
+   * Using min/max/mean + bitcount catches just about any error you can imagine
+
+      * min/max help catch values below ULP
+
+         * more min than max!
+
+      * bitcount further catches diffs
+
+
+Example Tests
+=============
 
 "Local regression"
    New code does not (inadvertently) change answers
+
+Parallel Layout
+   1 × 2 and 2 × 1 domain decomponsitions
 
 Restart/Pickup
    One :math:`\Delta t` run must equal two :math:`\tfrac{1}{2}\Delta t` runs
@@ -226,42 +319,42 @@ Restart/Pickup
 Aggressive initialization
    NaN-initialization arrays vs. uninitialized arrays
 
-(and others...)
+.. notes::
 
-.. 
+   Other tests include
 
-   * Optimization test
+   * OpenMP (single thread)
 
-   * symmetric/nonsymmetric grid
+   * Symmetric/nonsymmetric grid
 
-   * openmp
+   * Production ("REPRO") optimization
+
+      * Meant to match our "DEBUG" build
 
 
 Dimension Test
 ==============
 
+Dimensionally correct equations are invariant to scaling:
+
 .. math::
 
-   u_t + u u_x + v u_y &= -g h_x \\
-   v_t + u v_x + v v_y &= -g h_y \\
-   h_t + h u_x + h v_y &= 0 \\
+   u^{n+1} &= u^{n} +  \Delta t \times \mathcal{F} \\
+   \color{yellow}{2^{L-T}} u^{n+1} &= \color{yellow}{2^{L-T}} u^{n}
+      + \color{yellow}{2^T} \Delta t
+      \times \color{yellow}{2^{L - 2T}} \mathcal{F}
 
-.. list-table::
-
-   * - Dimensions:
-       * :math:`L` (horiz. length)
-       * :math:`T` (time)
-       * :math:`H` (layer depth)
-
-     - Invariants:
-       * :math:`\left[ u, v \right] = L T^{-1}`
-       * :math:`\left[ g \right] = L^2 H^{-1} T^{-2}`
-
-Solutions must be invariant to :math:`L \rightarrow 2^N L`, etc.
+Solutions should also be invariant, e.g. :math:`L \rightarrow 2^N L`
 
 .. notes::
 
-   Shallow water eqns, a lower dimensional ocean model.
+   * Unique(?) testing feature
+
+   * Relies on the factor-of-two reproducibility of the model
+
+   * By L -> 2^N L, I mean:
+
+      * Scale
 
 
 Floating Point Review
@@ -276,40 +369,58 @@ Floating Point Review
       \times (1 + {\color{pink} \alpha})
 
 * Smallest fractional diff:
-  :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
+  :math:`\color{yellow}{2^{-52} \approx 2.2 \times 10^{-16}}`
 
 * 17 digits to uniquely specify a result
+
+
+Shallow Water Example
+---------------------
+
+.. math::
+
+      u_t + u u_x + v u_y &= -g h_x \\
+      v_t + u v_x + v v_y &= -g h_y \\
+      h_t + h u_x + h v_y &= 0 \\
+
+.. list-table::
+
+   * - Dimensions:
+       * :math:`L` (horiz. length)
+       * :math:`T` (time)
+       * :math:`H` (layer depth)
+
+     - Invariants:
+       * :math:`\left[ u, v \right] = L T^{-1}`
+       * :math:`\left[ g \right] = L^2 H^{-1} T^{-2}`
 
 
 Rotation Test
 =============
 
+Equations should be invariant to rotation
+
 .. list-table::
-   :widths: 50 50
+   :widths: 25 25 25 25
 
    * - .. image:: media/orig.png
-          :width: 50%
-          :align: center
+
+     - .. image:: img/rotate_grid1.svg
 
      - .. image:: media/rotate.png
-          :width: 50%
-
-   * - .. image:: img/rotate_grid1.svg
-          :width: 50%
 
      - .. image:: img/rotate_grid2.svg
-          :width: 30%
+
+Perhaps should be called an "index" rotation
 
 .. image:: img/rotate_mem.svg
           :width: 65%
-      
+
 .. notes::
 
-   Perhaps "rotation" is not the best term, since it is more like a reordering
-   of the array.
+   * Caveat that we have to rotate *everything* (grids, fields, etc)
 
-   But I think it is accurate to call it a rotation of the index map, hence the
-   term "index rotation".
+   * Again, bit reproducibility makes this possible
 
 
 Invariant stencils
@@ -351,13 +462,23 @@ Invariant stencils
    The second form is rotationally invariant to any number of quarter turns.
 
 
-Meaningful Commits
-==================
+Descriptive Commits
+===================
 
 .. include:: src/git.log
    :code: txt
 
 Also: *No "fixed my typo" commits!*
+
+.. notes::
+
+   * Code is the "how"
+
+   * Commits are the "why"
+
+   * long-form commits are required
+
+   * Reality?  We do a lot of squashing and rebasing
 
 
 ----
@@ -388,6 +509,16 @@ Regression Suite
 
 Validate 61 tests using 3 compilers
 
+.. notes::
+
+   * Three compilers (GNU, Intel, Nvidia)
+
+   * Test from idealized (2d, column, ...) to production (OM4)
+
+   * Requires our production machine!
+
+      * (up to 480 cores)
+
 
 Tangled History
 ===============
@@ -408,14 +539,19 @@ Rewrite History!
 .. list-table::
    :widths: 35 65
 
-
    * - .. image:: img/git_rebased.svg
 
      - We aggressively rebase to create a new linear history
 
-       However, note that we also clobber user history.
+       However, note that we also clobber user history
 
-       How do we preserve existing runs?
+       We *cannot* clobber external research codebase!
+
+       How to preserve existing runs?
+
+.. notes::
+
+   * Clobbering user history causes some internal frustration!
 
 
 MOM6 Consortium
