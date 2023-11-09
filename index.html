@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Marshall Ward">
+  <meta name="dcterms.date" content="2023-11-09">
+  <title>The MOM6 Development Cycle</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="./reveal.js/dist/reveal.css">
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="./reveal.js/css/theme/gfdl.css" id="theme">
+  <!-- Explicitly add zenburn for highlight support -->
+  <link rel="stylesheet" href="./reveal.js/plugin/highlight/zenburn.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? './reveal.js/css/print/pdf.scss' : './reveal.js/css/print/paper.scss';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="./reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+  <base href="./index.html">
+</head>
+<body>
+  <div class="reveal"
+       style="background: url(img/bg_gfdl.jpg);
+              background-size: cover;">
+
+    <header style="width: 10vh; position: absolute; bottom: 2vh; right: 2vh;">
+      <img src="img/noaa_logo.png">
+    </header>
+
+    <footer style="font-size: 1pc; position: absolute; bottom: 2%; left: 2%;">
+      <code><p><a href="https://marshallward.org/woco2023/slides.html">https://marshallward.org/woco2023/slides.html</a></p></code>
+    </footer>
+
+    <div class="slides">
+
+<section id="title-slide">
+  <!--div class="reveal" style="text-align: right;">
+    <img src="img/noaa_logo.png"
+         style="background: none; border: none; box-shadow: none;
+         width: 30%"
+         alt="NCI">
+  </div-->
+  <h1 class="title">The MOM6 Development Cycle</h1>
+  <p class="author" style="text-align: right;">Marshall Ward</p>
+  <!-- org has a <p> for some reason... so use <div> -->
+  <div class="organization" style="text-align: right;"><p>NOAA GFDL</p></div>
+  <p class="date" style="text-align: right;">2023-11-09</p>
+  <!-- Currently cannot add notes to a title slide, so have to do manually-->
+  <aside class="notes">
+    
+  </aside>
+</section>
+
+<section id="mom6-ocean-model" class="title-slide slide level1">
+<h1>MOM6 Ocean Model</h1>
+<figure>
+<video autoplay loop data-src="media/mom6_relvort.mp4" controls=""><a href="media/mom6_relvort.mp4">Video</a></video>
+</figure>
+<aside class="notes">
+<ul>
+<li><p>Showcase what the model can do</p></li>
+<li><p>Diverse range of length and time scales</p></li>
+<li><p>Even more too slow to see</p>
+<ul>
+<li>Overturning (yrs, decades, ...)</li>
+</ul></li>
+<li><p>Responsibility is to replicate this flow</p></li>
+</ul>
+</aside>
+</section>
+
+<section id="mom6-sensitivity" class="title-slide slide level1">
+<h1>MOM6 sensitivity</h1>
+<figure>
+<video autoplay loop data-src="media/twolayer.mp4" controls=""><a href="media/twolayer.mp4">Video</a></video>
+</figure>
+<p>Minor deviation leads to <span class="math inline">\(O(1)\)</span> difference</p>
+<aside class="notes">
+<ul>
+<li>Replication is a major challenge</li>
+<li>Simple two-layer configuration</li>
+<li>Identical start, saved in double and single precision</li>
+<li>A single bit can cause similar deviations</li>
+<li>Both scientific and software challenges</li>
+</ul>
+</aside>
+</section>
+
+<section>
+<section id="reproducibility-rules" class="title-slide slide level1">
+<h1>Reproducibility Rules</h1>
+<ul>
+<li>Numerical expressions must be <em>bit-reproducible</em></li>
+<li>Code must not change existing solutions</li>
+<li>Changes must not disrupt existing research</li>
+</ul>
+<aside class="notes">
+<p>How to navigate this issue?</p>
+<ul>
+<li>Regression testing requires reproducibility</li>
+<li>Forecasters require reproducible output</li>
+<li>Researchers want latest features without answer changes</li>
+</ul>
+</aside>
+</section>
+<section id="what-we-dont-require" class="slide level2">
+<h2>What we <em>Don't</em> require</h2>
+<p>When can answers differ?</p>
+<ul>
+<li>Aggressive optimization (<code>-O3 -mavx ...</code>)</li>
+<li>Hardware (Intel, AMD, A64FX, ...)</li>
+<li>Compilers (<code>gcc</code>, <code>ifort</code>, ...)</li>
+<li>Libraries (<code>libm.a</code>, ...)</li>
+</ul>
+<p>But we still try to maximize reproducibility.</p>
+</section></section>
+<section id="float-order-of-operations" class="title-slide slide level1">
+<h1>Float Order-of-Operations</h1>
+<p>What is <span class="math inline">\(10^{-16} + 1 - 1\)</span>? Ambiguous!</p>
+<p><span class="math display">\[\begin{aligned}
+(10^{-16} + 1) - 1 &amp;\equiv 0 \\
+10^{-16} + (1 - 1) &amp;= 10^{-16}
+\end{aligned}\]</span></p>
+<p>Residuals below ULP <span class="math inline">\(\left(2 \times 10^{-16}\right)\)</span> are lost.</p>
+<p><em>Use parentheses to set the order of operations</em></p>
+<aside class="notes">
+<ul>
+<li><p>Without parentheses, compilers can reorder</p>
+<ul>
+<li>Perhaps for a good reason! But come back to that... (or not?)</li>
+</ul></li>
+<li><p>Scientifically, we may need a particular order!</p></li>
+<li><p>Must use language that respects parentheses</p></li>
+</ul>
+<p>ULP: Unit of least precision (or lowest bit)</p>
+<p>10^-16 is below the current ULP (2x10^-16), so is lost in the first example.</p>
+<p>Cancellation in the second summation shifts ULP, preserving 10^-16.</p>
+</aside>
+</section>
+
+<section id="transcendentals" class="title-slide slide level1">
+<h1>Transcendentals</h1>
+<p>How is <code>sin(x)</code> computed? Ambiguous!</p>
+<p><span class="math display">\[f(48^\circ) = 2 \Omega \sin \left( \frac{48 \pi}{180} \right)\]</span></p>
+<pre class="mathematica"><code>glibc 2.22: 0.108381727637274115E-03 (3F1C695FE71A3FE4)
+      2.26: 0.108381727637274128E-03 (3F1C695FE71A3FE5)</code></pre>
+<p><em>Avoid transcendentals where possible, manage dependencies when necessary.</em></p>
+<aside class="notes">
+<ul>
+<li><p>Rarely possible to identify the origin of such functions</p>
+<ul>
+<li>External library? (<code>libm</code>)</li>
+<li>Runtime?</li>
+</ul></li>
+<li><p>Sometimes unavoidable, but strictly speaking they should not be used</p></li>
+<li><p>Note that the power operator <code>a**b</code> falls under this category!</p></li>
+</ul>
+</aside>
+</section>
+
+<section id="global-summation" class="title-slide slide level1">
+<h1>Global Summation</h1>
+<p>The order of <code>sum()</code> is ambiguous!</p>
+<p>Parentheses work, but may have cumulant errors:</p>
+<p><span class="math display">\[\sum{\phi} = \phi_1 + (\phi_2 + ( \phi_3 + ... ))\]</span></p>
+<p>Sums are stored in fixed-precision using six integers:</p>
+<p><a href="https://doi.org/10.1016/j.parco.2014.04.007"><img data-src="img/fixedprec.svg" style="width:80.0%" alt="image" /></a></p>
+<aside class="notes">
+<p>Parentheses are OK for cumulant sums, but there are problems:</p>
+<ul>
+<li>Must gather to one rank/thread before summing</li>
+<li>Cumulant errors depend on order, threaten accuracy</li>
+</ul>
+<p>Cumulant sums over multiple bins resolve these issues.</p>
+<ul>
+<li>Importance of these will be clear in next couple of slides</li>
+</ul>
+<hr />
+<p>Hallberg and Adcroft, 2014: An Order-invariant Real-to-Integer Conversion Sum. Parallel Computing, 40(5-6), <a href="DOI:10.1016/j.parco.2014.04.007">DOI:10.1016/j.parco.2014.04.007</a></p>
+<p>Alistair says:</p>
+<p>Many people are aware that those last digits we write out vary depending on the order of summation. Not so for us which is why we can use it as a metric for detecting regression.</p>
+<p>Bob says:</p>
+<p>With the global reproducing sums, we are able to get identical values to roundoff compared with the single largest value in the sum, rather than roundoff compared with the sum itself. For an ocean model on a 1000x1000 grid, we are routinely able to detect global non-conservation that is larger than about 1 part in 10^20.</p>
+</aside>
+</section>
+
+<section id="gfdl-pr-life-cycle" class="title-slide slide level1">
+<h1>GFDL PR life Cycle</h1>
+<p><img data-src="img/life_cycle.svg" alt="image" /></p>
+<ol type="1">
+<li>User submits to node by PR</li>
+<li>Automated verification testing</li>
+<li>Code review (by a human)</li>
+<li>Test for regressions on production machine</li>
+<li>Rebase into node codebase</li>
+</ol>
+</section>
+
+<section id="verification-testing" class="title-slide slide level1">
+<h1>Verification Testing</h1>
+<p><img data-src="img/mom_verify.svg" alt="image" /></p>
+<p>CI testing is <em>platform independent</em></p>
+<aside class="notes">
+<ul>
+<li><p>Sketch of how our CI verifies code contributions</p></li>
+<li><p>Use "verification" in the Barry Boehm "Verification and Validation" sense...</p></li>
+<li><p>Executable is compiled in various modes</p>
+<ul>
+<li>compile-time grid, code coverage, etc</li>
+</ul></li>
+<li><p>Run "micro-tests" based on larger configs</p></li>
+<li><p>Each test subject to a variety of <strong>invariance</strong> tests</p></li>
+</ul>
+</aside>
+</section>
+
+<section id="state-of-the-model" class="title-slide slide level1">
+<h1>State of the Model</h1>
+<p>Global energy tracked to full precision</p>
+<pre class="mathematica"><code>Step   Days   Energy/Mass [m2 s-2]     Mean Sea Level [m]   ...
+
+   0   0.00   7.2161166068132286E-27   1.8190E-12           ...
+  12   0.50   2.7781004671136538E-04   1.1369E-12           ...
+  24   1.00   2.7734897826598717E-04   1.8190E-12           ...</code></pre>
+<p>Diagnostics use multiple metrics</p>
+<pre class="mathematica"><code>u-point: ocean_model-u
+  min  = -6.7187595818683776E-03  max  =  3.3480219779204019E-02
+  mean =  1.1239682303793666E-04  bits = 21851
+v-point: ocean_model-v
+  min  = -8.3469699425156359E-03  max  =  6.8420831486068704E-03
+  mean =  1.2076392816784489E-03  bits = 18606
+h-point: ocean_model-h
+  min  =  9.9999999999999915E-04  max  =  5.6265092225099863E+02
+  mean =  3.6490088139048595E+02  bits = 18673
+...</code></pre>
+<aside class="notes">
+<ul>
+<li><p>bit-reproducible summation allow for global metrics</p></li>
+<li><p>The CI checks <em>every diagnostic</em></p></li>
+<li><p>Using min/max/mean + bitcount catches just about any error you can imagine</p>
+<ul>
+<li><p>min/max help catch values below ULP</p>
+<ul>
+<li>more min than max!</li>
+</ul></li>
+<li><p>bitcount further catches diffs</p></li>
+</ul></li>
+</ul>
+</aside>
+</section>
+
+<section id="example-tests" class="title-slide slide level1">
+<h1>Example Tests</h1>
+<dl>
+<dt>"Local regression"</dt>
+<dd><p>New code does not (inadvertently) change answers</p>
+</dd>
+<dt>Parallel Layout</dt>
+<dd><p>1 × 2 and 2 × 1 domain decomponsitions</p>
+</dd>
+<dt>Restart/Pickup</dt>
+<dd><p>One <span class="math inline">\(\Delta t\)</span> run must equal two <span class="math inline">\(\tfrac{1}{2}\Delta t\)</span> runs</p>
+</dd>
+<dt>Aggressive initialization</dt>
+<dd><p>NaN-initialization arrays vs. uninitialized arrays</p>
+</dd>
+</dl>
+<aside class="notes">
+<p>Other tests include</p>
+<ul>
+<li><p>OpenMP (single thread)</p></li>
+<li><p>Symmetric/nonsymmetric grid</p></li>
+<li><p>Production ("REPRO") optimization</p>
+<ul>
+<li>Meant to match our "DEBUG" build</li>
+</ul></li>
+</ul>
+</aside>
+</section>
+
+<section>
+<section id="dimension-test" class="title-slide slide level1">
+<h1>Dimension Test</h1>
+<p>Dimensionally correct equations are invariant to scaling:</p>
+<p><span class="math display">\[\begin{aligned}
+u^{n+1} &amp;= u^{n} +  \Delta t \times \mathcal{F} \\
+\color{yellow}{2^{L-T}} u^{n+1} &amp;= \color{yellow}{2^{L-T}} u^{n}
+   + \color{yellow}{2^T} \Delta t
+   \times \color{yellow}{2^{L - 2T}} \mathcal{F}
+\end{aligned}\]</span></p>
+<p>Solutions should also be invariant, e.g. <span class="math inline">\(L \rightarrow 2^N L\)</span></p>
+<aside class="notes">
+<ul>
+<li><p>Unique(?) testing feature</p></li>
+<li><p>Relies on the factor-of-two reproducibility of the model</p></li>
+<li><p>By L -&gt; 2^N L, I mean:</p>
+<ul>
+<li>Scale</li>
+</ul></li>
+</ul>
+</aside>
+</section>
+<section id="floating-point-review" class="slide level2">
+<h2>Floating Point Review</h2>
+<p><a href="https://commons.wikimedia.org/wiki/File:Float_example.svg"><img data-src="img/ieee_float_fmt.svg" alt="image" /></a></p>
+<p><span class="math display">\[\phi = (-1)^{\color{yellow} s} \times 2^{\color{aquamarine} M}
+   \times (1 + {\color{pink} \alpha})\]</span></p>
+<ul>
+<li>Smallest fractional diff: <span class="math inline">\(\color{yellow}{2^{-52} \approx 2.2 \times 10^{-16}}\)</span></li>
+<li>17 digits to uniquely specify a result</li>
+</ul>
+</section>
+<section id="shallow-water-example" class="slide level2">
+<h2>Shallow Water Example</h2>
+<p><span class="math display">\[\begin{aligned}
+u_t + u u_x + v u_y &amp;= -g h_x \\
+v_t + u v_x + v v_y &amp;= -g h_y \\
+h_t + h u_x + h v_y &amp;= 0 \\
+\end{aligned}\]</span></p>
+<table>
+<tbody>
+<tr class="odd">
+<td>Dimensions:
+<ul>
+<li><span class="math inline">\(L\)</span> (horiz. length)</li>
+<li><span class="math inline">\(T\)</span> (time)</li>
+<li><span class="math inline">\(H\)</span> (layer depth)</li>
+</ul></td>
+<td>Invariants:
+<ul>
+<li><span class="math inline">\(\left[ u, v \right] = L T^{-1}\)</span></li>
+<li><span class="math inline">\(\left[ g \right] = L^2 H^{-1} T^{-2}\)</span></li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="rotation-test" class="title-slide slide level1">
+<h1>Rotation Test</h1>
+<p>Equations should be invariant to rotation</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><img data-src="media/orig.png" alt="image" /></td>
+<td><img data-src="img/rotate_grid1.svg" alt="image" /></td>
+<td><img data-src="media/rotate.png" alt="image" /></td>
+<td><img data-src="img/rotate_grid2.svg" alt="image" /></td>
+</tr>
+</tbody>
+</table>
+<p>Perhaps should be called an "index" rotation</p>
+<p><img data-src="img/rotate_mem.svg" style="width:65.0%" alt="image" /></p>
+<aside class="notes">
+<ul>
+<li>Caveat that we have to rotate <em>everything</em> (grids, fields, etc)</li>
+<li>Again, bit reproducibility makes this possible</li>
+</ul>
+</aside>
+</section>
+<section id="invariant-stencils" class="slide level2">
+<h2>Invariant stencils</h2>
+<p><span class="math inline">\(\phi^{(c)}_{i,j} = \frac{1}{4} (\phi_A + \phi_B + \phi_C + \phi_D)\)</span></p>
+<table>
+<tbody>
+<tr class="odd">
+<td><p><img data-src="img/stencil1.svg" alt="image" /></p></td>
+<td><p><span class="math inline">\(\frac{1}{4} (
+     ({\color{LightCoral}{\phi_A}} + {\color{LightCoral}{\phi_B}})
+     + ({\color{LightSkyBlue}{\phi_C}} + {\color{LightSkyBlue}{\phi_D}})
+)\)</span></p>
+<p><span class="math inline">\(\frac{1}{4} (
+     ({\color{LightCoral}{\phi_A}} + {\color{LightSkyBlue}{\phi_C}})
+     + ({\color{LightCoral}{\phi_B}} + {\color{LightSkyBlue}{\phi_D}})
+)\)</span></p></td>
+</tr>
+<tr class="even">
+<td><img data-src="img/stencil2.svg" alt="image" /></td>
+<td><span class="math inline">\(\frac{1}{4} (
+     ({\color{LightCoral}{\phi_A + \phi_D}})
+     + ({\color{LightSkyBlue}{\phi_B + \phi_C}})
+)\)</span></td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>Example: Interpolation from vertex to center point</p>
+<p>The ideal outcome is to construct the stencil in a rotationally invariant form.</p>
+<p>The first example will evaluate its terms in a different order after a quarter turn.</p>
+<p>The second form is rotationally invariant to any number of quarter turns.</p>
+</aside>
+</section></section>
+<section>
+<section id="descriptive-commits" class="title-slide slide level1">
+<h1>Descriptive Commits</h1>
+<pre class="txt" data-code="txt
+
+"><code>commit d210cc6cdfd03150306c8ba41612e3380d66c281
+Author: Robert Hallberg &lt;Robert.Hallberg@noaa.gov&gt;
+Date:   Wed Aug 16 17:11:35 2023 -0400
+
+    +Remove build_grid_arbitrary
+    
+      Removed the unused (and unusable) routine build_grid_arbitrary.
+      This routine could not have been used because it had a hard-coded
+      STOP call, and comments in it indicated that it should have been
+      deleted in July, 2013.  The run-time parameter setting that would
+      have triggered a call to this routine has been retained for now,
+      but with a fatal error message explaining that this routine has
+      not been implemented.   All answers are bitwise identical in any
+      cases that ran before.
+
+commit 615e57f854db8be8c75a9edba6bb05e3f04a6eb7
+Author: raphael dussin &lt;raphael.dussin@gmail.com&gt;
+Date:   Sat Oct 28 15:09:45 2023 -0400
+
+    extension to the internal tides module (#481)
+    
+    the module in now able to read in tidal velocities for different
+    tidal harmonics and distribute the energy and distribute TKE input over
+    the different vertical modes. This involves upsizing dimensions of
+    several arrays and mofiying some API. internal_tide_input_CS is
+    promoted to public to facilitate the passing of energy input to
+    MOM_internal_tides
+
+commit ddb88f8c2fb36ce282cfdb34739a1c37ed369abd
+Author: Cory Spencer Jones &lt;spencerjones@tamu.edu&gt;
+Date:   Mon Oct 16 11:33:26 2023 -0500
+
+    +Add timestamp and directory to particles restart
+    
+    The directory, time and timestamp variables are needed by the
+    particle code in order to write better restart files. I have changed
+    the particles_save_restart interface to add these variables. I have
+    also removed the option to pass temperature and salinity to
+    particles_save_restart, because these variables are not useful for
+    restart.
+
+commit 503a9f4c5f585e258a3d5810cad0b4af073c4fb8
+Author: Alex Huth &lt;huthalexandere@gmail.com&gt;
+Date:   Fri Oct 27 06:59:36 2023 -0400
+
+    ice shelf front advection: When determining a reference thickness
+    for a partially-filled cell, add the reference thickness
+    contribution from a neighboring filled cell proportionate to its
+    flux into the partially-filled cell. This is more accurate than
+    simply taking the average thickness of all neighboring filled cells.
+    Also fixed incorrect bounds. (#475)
+
+commit f514529a8a299b8e84512a10062aa524f0a23478
+Author: Alex Huth &lt;huthalexandere@gmail.com&gt;
+Date:   Thu Oct 26 15:11:12 2023 -0400
+
+    Ice sheet thickness boundary condition (#474)
+    
+    * allow for assigned ice shelf thickness where hmask==3, but still
+      solve for ice sheet velocity
+</code></pre>
+<p>Also: <em>No "fixed my typo" commits!</em></p>
+<aside class="notes">
+<ul>
+<li>Code is the "how"</li>
+<li>Commits are the "why"</li>
+<li>long-form commits are required</li>
+<li>Reality? We do a lot of squashing and rebasing</li>
+</ul>
+</aside>
+</section>
+<section class="slide level2">
+
+<table>
+<colgroup>
+<col style="width: 45%" />
+<col style="width: 55%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><img data-src="media/linus_and_dirk.png" alt="image" /></td>
+<td><blockquote>
+<p>Commit messages to me are almost as important as the code change itself.</p>
+<p>If you can explain the code change to me, I will trust the code.</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<p>Linus Torvalds, Linux OSS 2020</p>
+<aside class="notes">
+<p><a href="https://www.youtube.com/watch?v=H8Gd9t7FQqI">https://www.youtube.com/watch?v=H8Gd9t7FQqI</a></p>
+</aside>
+</section></section>
+<section id="regression-suite" class="title-slide slide level1">
+<h1>Regression Suite</h1>
+<p><img data-src="img/mom6_reg_suite.svg" alt="image" /></p>
+<p>Validate 61 tests using 3 compilers</p>
+<aside class="notes">
+<ul>
+<li><p>Three compilers (GNU, Intel, Nvidia)</p></li>
+<li><p>Test from idealized (2d, column, ...) to production (OM4)</p></li>
+<li><p>Requires our production machine!</p>
+<ul>
+<li>(up to 480 cores)</li>
+</ul></li>
+</ul>
+</aside>
+</section>
+
+<section id="tangled-history" class="title-slide slide level1">
+<h1>Tangled History</h1>
+<table>
+<colgroup>
+<col style="width: 45%" />
+<col style="width: 55%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><p><img data-src="img/git_branchy.svg" alt="image" /></p></td>
+<td><p>Having many active users leads to a non-sequential history</p>
+<p>This severely complicates our ability to track bugs and regressions!</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="rewrite-history" class="title-slide slide level1">
+<h1>Rewrite History!</h1>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><p><img data-src="img/git_rebased.svg" alt="image" /></p></td>
+<td><p>We aggressively rebase to create a new linear history</p>
+<p>However, note that we also clobber user history</p>
+<p>We <em>cannot</em> clobber external research codebase!</p>
+<p>How to preserve existing runs?</p></td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<ul>
+<li>Clobbering user history causes some internal frustration!</li>
+</ul>
+</aside>
+</section>
+
+<section>
+<section id="mom6-consortium" class="title-slide slide level1">
+<h1>MOM6 Consortium</h1>
+<p><img data-src="img/consortium.svg" style="width:75.0%" alt="image" /></p>
+</section>
+<section id="what-is-the-mom6-consortium" class="slide level2">
+<h2>What is the MOM6 Consortium?</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><p><img data-src="img/consortium.svg" alt="image" /></p></td>
+<td><p>Codebase is governed by a consortium of research groups.</p>
+<p>All changes to the "hub" must be tracked and preserved.</p>
+<p>Groups manage their own branch, and contribute to <code>main</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section id="code-continuity" class="title-slide slide level1">
+<h1>Code Continuity</h1>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><img data-src="img/git_nodes_dev.svg" alt="image" /></td>
+<td><ul>
+<li>Merges to <code>main</code> are <strong>unanimous</strong></li>
+<li>All branches within a node are preserved</li>
+<li>Nodes can easily collaborate on joint projects</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="summary" class="title-slide slide level1">
+<h1>Summary</h1>
+<dl>
+<dt>Bit reproducibility?</dt>
+<dd><p>Restrict model to <em>non-ambiguous</em> operations</p>
+</dd>
+<dt>Preserve existing solutions?</dt>
+<dd><p><em>Regression</em> and <em>self-consistency</em> testing</p>
+</dd>
+<dt>Code preservation?</dt>
+<dd><p>Mutual governance by a <em>consortium</em> of groups</p>
+</dd>
+</dl>
+</section>
+    </div>
+  </div>
+
+  <script src="./reveal.js/dist/reveal.js"></script>
+  <script src="./reveal.js/plugin/math/math.js"></script>
+  <script src="./reveal.js/plugin/notes/notes.js"></script>
+  <script src="./reveal.js/plugin/highlight/highlight.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          //mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          "HTML-CSS": {
+              preferredFont: "Neo-Euler",
+              //preferredFont: "Asana-Math",
+          },
+          //TeX: {
+          //  inlineMath: [['\\(','\\)']],
+          //  displayMath: [['\\[','\\]']],
+          //  balanceBraces: true,
+          //  processEscapes: false,
+          //  processRefs: true,
+          //  processEnvironments: true,
+          //  preview: 'TeX',
+          //  skipTags: ['script','noscript','style','textarea','pre','code'],
+          //  ignoreClass: 'tex2jax_ignore',
+          //  processClass: 'tex2jax_process'
+          //},
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: './reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: './reveal.js/plugin/zoom/zoom.js', async: true },
+          { src: './reveal.js/plugin/notes/notes.js', async: true }
+        ],
+        plugins : [ RevealMath, RevealNotes, RevealHighlight],
+        pdfMaxPagesPerSlide: 1,
+      });
+    </script>
+    </body>
+</html>
