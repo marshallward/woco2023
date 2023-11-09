@@ -6,7 +6,7 @@ The MOM6 Development Cycle
 :organization: NOAA GFDL
 :description: How the MOM6 development cycle ensures correctness and reproducibility
 :date: 2023-11-09
-:url: https://marshallward.org/woco2023/slides.html
+:url: https://marshallward.org/woco2023/index.html
 :preface:
 
 
