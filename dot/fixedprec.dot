@@ -1,0 +1,32 @@
+digraph fixedprec {
+    rankdir = TB
+    bgcolor = transparent
+    node [
+        shape = record
+        style = filled
+        fillcolor = white
+        fontname = helvetica
+    ]
+    edge [
+        color = white
+    ]
+ 
+    value [
+        label="<b0> a0 | <b1> a1 | <b2> a2 | <b3> a3 | <b4> a4 | <b5> a5",
+        width=3
+    ]
+
+    bin0 [label=<a<sub>0</sub> × 2<sup>3N</sup>>]
+    bin1 [label=<a<sub>1</sub> × 2<sup>2N</sup>>]
+    bin2 [label=<a<sub>2</sub> × 2<sup>N</sup>>]
+    bin3 [label=<a<sub>3</sub> × 2<sup>0</sup>>]
+    bin4 [label=<a<sub>4</sub> × 2<sup>-N</sup>>]
+    bin5 [label=<a<sub>5</sub> × 2<sup>-2N</sup>>]
+
+    value:b0 -> bin0
+    value:b1 -> bin1
+    value:b2 -> bin2
+    value:b3 -> bin3
+    value:b4 -> bin4
+    value:b5 -> bin5
+}

@@ -26,14 +26,11 @@ Minor deviation leads to :math:`O(1)` difference
 Reproducibility Rules
 =====================
 
-Use bit-reproducible expressions
-   Numerical expressions must be unambiguous
+* Numerical expressions must be *bit-reproducible*
 
-Validate model output
-   Model must replicate existing simulations
+* Code must not change existing solutions
 
-Preserve existing solutions
-   Code changes must not disrupt existing research
+* Changes must not disrupt existing research
 
 
 What we *Don't* require
@@ -91,6 +88,8 @@ What is :math:`10^{-16} + 1 - 1`?  Ambiguous!
 
 Residuals below ULP :math:`\left(2 \times 10^{-16}\right)` are lost.
 
+*Use parentheses to set the order of operations*
+
 .. notes::
 
    ULP: Unit of least precision (or lowest bit)
@@ -114,8 +113,8 @@ How is ``sin(x)`` computed?  Ambiguous!
    glibc 2.22: 0.108381727637274115E-03 (3F1C695FE71A3FE4)
          2.26: 0.108381727637274128E-03 (3F1C695FE71A3FE5)
 
-Avoid transcendentals where possible, manage dependencies when
-necessary.
+*Avoid transcendentals where possible, manage dependencies when
+necessary.*
 
 
 Global Summation
@@ -129,9 +128,10 @@ Parentheses work, but may have cumulant errors:
 
    \sum{\phi} = \phi_1 + (\phi_2 + ( \phi_3 + ... ))
 
-Use a fixed-precision format across six integers:
+Sums are stored in fixed-precision using six integers:
 
-.. image:: img/efp_sum.svg
+.. image:: img/fixedprec.svg
+   :width: 80%
    :target: https://doi.org/10.1016/j.parco.2014.04.007
 
 .. notes::
@@ -185,10 +185,10 @@ Verification Testing
 .. image:: img/mom_verify.svg
 
 
-Regression Testing
-------------------
+State of the Model
+==================
 
-Global energy at full precision
+Global energy tracked to full precision
 
 .. code:: mathematica
 
@@ -198,11 +198,7 @@ Global energy at full precision
     12   0.50   2.7781004671136538E-04   1.1369E-12           ...
     24   1.00   2.7734897826598717E-04   1.8190E-12           ...
 
-Differences are flagged as regressions.
-
-
-Diagnostic Reproducibility
---------------------------
+Diagnostics cover multiple statistics
 
 .. code:: mathematica
 
@@ -218,18 +214,27 @@ Diagnostic Reproducibility
      ...
 
 
-Usual tests
-===========
+Standard Tests
+==============
 
-* Restart: dt = 2*(dt/2)
+"Local regression"
+   New code does not (inadvertently) change answers
 
-* NaN init
+Restart/Pickup
+   One :math:`\Delta t` run must equal two :math:`\tfrac{1}{2}\Delta t` runs
 
-* "modest" optimization
+Aggressive initialization
+   NaN-initialization arrays vs. uninitialized arrays
 
-* grid (symmetric/nonsymmetric)
+(and others...)
 
-* "Local" regression
+.. 
+
+   * Optimization test
+
+   * symmetric/nonsymmetric grid
+
+   * openmp
 
 
 Dimension Test
@@ -246,7 +251,7 @@ Dimension Test
    * - Dimensions:
        * :math:`L` (horiz. length)
        * :math:`T` (time)
-       * :math:`H` (layer thickness)
+       * :math:`H` (layer depth)
 
      - Invariants:
        * :math:`\left[ u, v \right] = L T^{-1}`
@@ -257,12 +262,6 @@ Solutions must be invariant to :math:`L \rightarrow 2^N L`, etc.
 .. notes::
 
    Shallow water eqns, a lower dimensional ocean model.
-
-
-..
-
-   Example?
-   --------
 
 
 Floating Point Review
@@ -280,27 +279,6 @@ Floating Point Review
   :math:`\color{yellow}2^{-52} \approx 2.2 \times 10^{-16}`
 
 * 17 digits to uniquely specify a result
-
-
-MOM6 Dimensionality
--------------------
-
-===== =======  =================
-Unit  Scaling  Name
-===== =======  =================
-s     T        Time
-m     L        Horizontal length
-m     H        Layer thickness
-m     Z        Vertical length
-kg/m3 R        Density
-J/kg  Q        Enthalpy
-===== =======  =================
-
-.. notes::
-
-   The currently tracked units are shown in this table.
-
-   Also look up tracers
 
 
 Rotation Test
@@ -344,20 +322,20 @@ Invariant stencils
    * - .. image:: img/stencil1.svg
 
      - :math:`\frac{1}{4} (
-            ({\color{LightCoral} \phi_A} + {\color{LightCoral} \phi_B})
-            + ({\color{LightSkyBlue} \phi_C} + {\color{LightSkyBlue} \phi_D})
+            ({\color{LightCoral}{\phi_A}} + {\color{LightCoral}{\phi_B}})
+            + ({\color{LightSkyBlue}{\phi_C}} + {\color{LightSkyBlue}{\phi_D}})
        )`
 
        :math:`\frac{1}{4} (
-            ({\color{LightCoral} \phi_A} + {\color{LightSkyBlue} \phi_C})
-            + ({\color{LightCoral} \phi_B} + {\color{LightSkyBlue} \phi_D})
+            ({\color{LightCoral}{\phi_A}} + {\color{LightSkyBlue}{\phi_C}})
+            + ({\color{LightCoral}{\phi_B}} + {\color{LightSkyBlue}{\phi_D}})
        )`
 
    * - .. image:: img/stencil2.svg
 
      - :math:`\frac{1}{4} (
-            ({\color{LightCoral} \phi_A + \phi_D})
-            + ({\color{LightSkyBlue} \phi_B + \phi_C})
+            ({\color{LightCoral}{\phi_A + \phi_D}})
+            + ({\color{LightSkyBlue}{\phi_B + \phi_C}})
        )`
 
 .. notes::
@@ -403,47 +381,12 @@ Linus Torvalds, Linux OSS 2020
    https://www.youtube.com/watch?v=H8Gd9t7FQqI
 
 
-Commits as email
-----------------
-
-* Pre-git, commits were *emails* sent to maintainers
-
-   * The patch was the commit
-
-   * The log was the email (subject + body)
-
-* Emails follow a standard format (RFC 5822)
-
-   * "Lines … SHOULD be limited to 78 characters"
-
-   * Subject reduced to ~50, leave space for hash
-
-The closer you follow these rules, the better the results
-
-
 Regression Suite
 ================
 
 .. image:: img/mom6_reg_suite.svg
 
 Validate 61 tests using 3 compilers
-
-
-Regression Compilers
---------------------
-
-* GNU (12.2.0)
-
-  * "Debug" (``-O0``; floating point exceptions)
-
-  * "Repro" (``-O2``; no vectorization)
-
-* Intel (2022.0.2)
-
-* Nvidia (22.3)
-
-Additional testing for OpenMP and compile-time grid selection (symmetric vs
-nonsymmetric).
 
 
 Tangled History
@@ -454,7 +397,7 @@ Tangled History
 
    * - .. image:: img/git_branchy.svg
 
-     - Many active users creates a non-sequential history
+     - Having many active users leads to a non-sequential history
 
        This severely complicates our ability to track bugs and regressions!
 
@@ -505,16 +448,16 @@ Code Continuity
 
    - * .. image:: img/git_nodes_dev.svg
 
-     * - **All members** must approve merge to ``main``
+     * - Merges to ``main`` are **unanimous**
 
        - All branches within a node are preserved
 
-       - Nodes can easily share commits!
+       - Nodes can easily collaborate on joint projects
 
 ..
 
-   This slide is a bit too pedantic or "in the weeds" for this stage of the
-   talk.
+   The following slide is a bit too pedantic or "in the weeds" for this stage
+   of the talk.
 
    Git Review: Fast Forward
    ------------------------
@@ -539,18 +482,8 @@ Summary
 Bit reproducibility?
    Restrict model to *non-ambiguous* operations
 
-Regression testing?
+Preserve existing solutions?
    *Regression* and *self-consistency* testing
 
 Code preservation?
    Mutual governance by a *consortium* of groups
-
-
-Beyond Correctness
-==================
-
-* Platform-independent computation
-
-* Code coverage after compilation
-
-* Automated performance monitoring
